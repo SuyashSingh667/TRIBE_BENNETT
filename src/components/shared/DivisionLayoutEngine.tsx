@@ -22,7 +22,7 @@ export interface DivisionConfig {
 // 3D Visual Elements per Domain
 // --------------------------------------------------------------------------
 const Particles = ({ color = '#ffffff', count = 5000, speed = 10, pattern = 'sphere' }) => {
-  const ref = useRef<any>();
+  const ref = useRef<any>(null);
   let positions: any = new Float32Array(count * 3);
   if (pattern === 'sphere') {
     positions = random.inSphere(positions, { radius: 2 });

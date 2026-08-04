@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as random from 'maath/random/dist/maath-random.esm';
 
@@ -9,9 +9,9 @@ import * as random from 'maath/random/dist/maath-random.esm';
 
 // Particle Mesh for Canvas Backgrounds
 export const Starfield = ({ color = '#ffffff' }) => {
-  const ref = useRef<any>();
+  const ref = useRef<any>(null);
   const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.5 }));
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     ref.current.rotation.x -= delta / 10;
     ref.current.rotation.y -= delta / 15;
   });
@@ -79,7 +79,7 @@ export const getClubVisuals = (clubName: string, clubCategory: string) => {
          <div className="absolute inset-0 bg-[#000000]">
             <div className="absolute h-[200%] w-full animate-[scan_8s_linear_infinite] bg-[linear-gradient(to_bottom,transparent,rgba(220,38,38,0.2),transparent)] opacity-30" />
             <div className="absolute right-10 top-20 text-[8px] text-red-500/40 font-mono tracking-widest break-all w-64 opacity-50">
-               {Array.from({length:20}).map((_,i) => `0x${Math.floor(Math.random()*16777215).toString(16).toUpperCase().padStart(6,'0')} `)}
+               {Array.from({length:20}).map((_,_i) => `0x${Math.floor(Math.random()*16777215).toString(16).toUpperCase().padStart(6,'0')} `)}
             </div>
          </div>
        ),

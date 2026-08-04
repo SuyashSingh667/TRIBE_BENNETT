@@ -14,7 +14,7 @@ interface ClubDetailTemplateProps {
   accentBgClass: string;
 }
 
-export const ClubDetailTemplate: React.FC<ClubDetailTemplateProps> = ({ club, accentColorClass, accentBgClass }) => {
+export const ClubDetailTemplate: React.FC<ClubDetailTemplateProps> = ({ club, accentColorClass: _accentColorClass, accentBgClass }) => {
   const navigate = useNavigate();
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showExploreModal, setShowExploreModal] = useState(false);

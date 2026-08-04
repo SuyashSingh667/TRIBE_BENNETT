@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Environment, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
+import { supabase } from "../lib/supabase";
 
 // --- 3D Scene Components ---
 const AbstractShapes = () => {
@@ -77,15 +78,46 @@ export const LandingPage: React.FC = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.name && formData.email && formData.password) navigate("/dashboard");
+    setLoading(true);
+    setError(null);
+    const { error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        data: { full_name: formData.name },
+      },
+    });
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    navigate("/dashboard");
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loginData.email && loginData.password) navigate("/dashboard");
+    setLoading(true);
+    setError(null);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: loginData.email,
+      password: loginData.password,
+    });
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    navigate("/dashboard");
   };
 
   return (
@@ -168,6 +200,12 @@ export const LandingPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleLoginSubmit} className="flex flex-col gap-4">
+              {error && (
+                <div className="bg-red-600/10 border border-red-600/30 rounded-2xl px-6 py-3 text-red-400 text-xs font-medium">
+                  {error}
+                </div>
+              )}
+
               <input
                 required
                 value={loginData.email}
@@ -188,10 +226,13 @@ export const LandingPage: React.FC = () => {
 
               <button
                 type="submit"
-                className="h-[60px] mt-4 bg-white text-black font-black tracking-[0.15em] text-xs uppercase rounded-2xl hover:bg-slate-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95"
+                disabled={loading}
+                className="h-[60px] mt-4 bg-white text-black font-black tracking-[0.15em] text-xs uppercase rounded-2xl hover:bg-slate-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign In
+                {loading ? 'Signing In...' : 'Sign In'}
               </button>
+
+
             </form>
           </div>
         </div>
@@ -244,6 +285,12 @@ export const LandingPage: React.FC = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                {error && (
+                  <div className="bg-red-600/10 border border-red-600/30 rounded-2xl px-6 py-3 text-red-400 text-xs font-medium">
+                    {error}
+                  </div>
+                )}
+
                 <input
                   required
                   value={formData.name}
@@ -272,24 +319,13 @@ export const LandingPage: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="h-[60px] mt-6 bg-white text-black font-black tracking-[0.15em] text-xs uppercase rounded-2xl hover:bg-slate-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95"
+                  disabled={loading}
+                  className="h-[60px] mt-6 bg-white text-black font-black tracking-[0.15em] text-xs uppercase rounded-2xl hover:bg-slate-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Create Account
+                  {loading ? 'Creating Account...' : 'Create Account'}
                 </button>
 
-                <div className="flex items-center gap-4 my-2">
-                  <div className="flex-1 h-[1px] bg-[#222]"></div>
-                  <span className="text-[10px] font-black uppercase text-slate-600 tracking-widest">Or Continue With</span>
-                  <div className="flex-1 h-[1px] bg-[#222]"></div>
-                </div>
 
-                <button
-                  type="button"
-                  className="h-[55px] bg-[#0a0a0a] border border-[#222] rounded-2xl flex items-center justify-center gap-3 text-white hover:bg-[#111] hover:border-[#444] transition-all font-bold text-xs"
-                >
-                  <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 grayscale opacity-80" alt="Google" />
-                  Google
-                </button>
               </form>
 
               <p className="text-[10px] text-slate-500 text-center uppercase tracking-widest font-bold mt-8">
