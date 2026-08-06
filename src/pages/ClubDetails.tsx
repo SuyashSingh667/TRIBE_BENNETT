@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { mockData } from '../data/mockData';
 import ClubDetailTemplate from '../components/shared/ClubDetailTemplate';
+import { getAllClubs } from '../lib/clubManager';
 
 const ClubDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -9,12 +9,8 @@ const ClubDetails: React.FC = () => {
   const navigate = useNavigate();
   const type = searchParams.get('type') || 'technical';
 
-  // Find club across all categories
-  const allClubs = [
-    ...mockData.technicalClubs.map(c => ({...c, originType: 'technical'})),
-    ...mockData.culturalClubs.map(c => ({...c, originType: 'cultural'})),
-    ...mockData.sportsClubs.map(c => ({...c, originType: 'sports'}))
-  ];
+  // Find club across all categories from local storage
+  const allClubs = getAllClubs();
 
   const club = allClubs.find(
     c => c.name.toLowerCase().replace(/\s+/g, '-') === id

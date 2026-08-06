@@ -41,10 +41,9 @@ export const TechnicalClubs: React.FC = () => {
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       category="Technical"
-      accentColorClass="text-red-500"
-      accentBgClass="bg-red-500"
-      accentBorderClass="border-red-500"
-      accentShadowClass="shadow-red-500/20"
+      accentBgClass="bg-[#ffde00]"
+      accentBorderClass="border-black"
+      accentShadowClass="shadow-neo"
       onAddClub={handleAddClub}
     >
        <DivisionLayoutEngine config={config} clubs={clubs} />

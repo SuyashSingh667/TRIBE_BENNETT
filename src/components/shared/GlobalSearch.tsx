@@ -160,57 +160,57 @@ export const GlobalSearch: React.FC = () => {
 
   return (
     <div className="relative w-full max-w-xl group z-[100]" ref={wrapperRef}>
-      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-white transition-colors">search</span>
+      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-black transition-colors font-black">search</span>
       <input 
         value={query}
         onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
         onFocus={() => { if(query) setIsOpen(true); }}
-        className={`w-full bg-[#111] border border-[#333] rounded-full pl-12 pr-12 py-2.5 focus:outline-none focus:border-white transition-all text-sm text-white placeholder:text-slate-500 font-medium shadow-[0_0_15px_rgba(0,0,0,0.5)]`} 
+        className={`w-full bg-white border-[3px] border-black rounded-xl pl-12 pr-12 py-3 focus:outline-none focus:bg-gray-50 transition-all text-sm text-black placeholder:text-gray-500 font-bold shadow-neo-sm`} 
         placeholder="Type keyword, club name, or event..." 
         type="text" 
       />
       {query && (
         <button 
           onClick={() => { setQuery(''); setIsOpen(false); }} 
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-black hover:bg-gray-200 rounded-md p-1 flex items-center justify-center transition-colors"
         >
-          <span className="material-symbols-outlined text-sm">close</span>
+          <span className="material-symbols-outlined text-sm font-black">close</span>
         </button>
       )}
 
       {isOpen && query.trim().length > 0 && (
-        <div className="absolute top-14 left-0 w-full bg-[#0a0a0a] border border-[#333] rounded-2xl shadow-[0_40px_100px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col font-display animate-in slide-in-from-top-2 fade-in duration-200">
+        <div className="absolute top-16 left-0 w-full bg-white border-[4px] border-black rounded-2xl shadow-neo overflow-hidden flex flex-col font-display animate-in slide-in-from-top-2 fade-in duration-200">
           
           <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
             {results.length === 0 ? (
-               <div className="p-8 text-center flex flex-col items-center">
-                 <span className="material-symbols-outlined text-slate-600 text-3xl mb-3">search_off</span>
-                 <p className="text-white text-sm font-black tracking-widest uppercase mb-1">No matching assets found</p>
-                 <p className="text-slate-500 text-xs font-bold">Try adjusting your operational parameters.</p>
+               <div className="p-8 text-center flex flex-col items-center bg-[#fdfaf6]">
+                 <span className="material-symbols-outlined text-gray-400 text-3xl mb-3 font-black">search_off</span>
+                 <p className="text-black text-sm font-black tracking-widest uppercase mb-1">No matching assets found</p>
+                 <p className="text-gray-600 text-xs font-bold">Try adjusting your operational parameters.</p>
                </div>
             ) : (
                <div className="p-4 flex flex-col gap-6">
                  {Object.entries(grouped).map(([type, items]) => (
                    <div key={type}>
-                     <h3 className="text-[9px] font-black tracking-[0.2em] uppercase text-red-500 mb-3 px-3 flex items-center gap-2">
-                       <span className="w-2 h-0.5 bg-red-600"></span>
+                     <h3 className="text-[9px] font-black tracking-[0.2em] uppercase text-black mb-3 px-3 flex items-center gap-2">
+                       <span className="w-2 h-2 border-2 border-black bg-[#ffde00]"></span>
                        {groupLabels[type] || type}
                      </h3>
-                     <div className="flex flex-col gap-1">
+                     <div className="flex flex-col gap-2">
                        {items.map((item, idx) => (
                          <div 
                            key={idx}
                            onClick={() => handleSelect(item)}
-                           className="flex items-center gap-4 p-3 rounded-xl hover:bg-[#111] cursor-pointer group/item transition-colors border border-transparent hover:border-[#333]"
+                           className="flex items-center gap-4 p-3 rounded-xl bg-white hover:bg-[#ffde00] cursor-pointer group/item transition-colors border-[3px] border-black shadow-neo-sm hover:-translate-y-1 hover:shadow-neo-hover"
                          >
-                           <div className="size-10 rounded-full bg-[#1a1a1a] border border-[#222] flex items-center justify-center text-slate-400 group-hover/item:text-white group-hover/item:border-white/20 transition-all">
+                           <div className="size-10 rounded-lg bg-white border-[3px] border-black flex items-center justify-center text-black font-black transition-all">
                              <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
                            </div>
                            <div className="flex flex-col flex-1 truncate">
-                             <span className="text-white text-sm font-bold truncate group-hover/item:text-white">{item.title}</span>
-                             <span className="text-slate-500 text-xs font-medium truncate">{item.subtitle}</span>
+                             <span className="text-black text-sm font-black truncate">{item.title}</span>
+                             <span className="text-gray-700 text-xs font-bold truncate">{item.subtitle}</span>
                            </div>
-                           <span className="material-symbols-outlined text-slate-600 opacity-0 group-hover/item:opacity-100 group-hover/item:-translate-x-1 transition-all text-sm">arrow_forward</span>
+                           <span className="material-symbols-outlined text-black font-black opacity-0 group-hover/item:opacity-100 group-hover/item:-translate-x-1 transition-all text-sm">arrow_forward</span>
                          </div>
                        ))}
                      </div>
@@ -220,7 +220,7 @@ export const GlobalSearch: React.FC = () => {
             )}
           </div>
           
-          <div className="p-3 bg-[#111] border-t border-[#222] flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-slate-500">
+          <div className="p-3 bg-[#fdfaf6] border-t-[4px] border-black flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-black">
              <span>Press Esc to close</span>
              <span>TRIBE Global Query System</span>
           </div>

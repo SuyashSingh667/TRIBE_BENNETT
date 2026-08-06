@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { saveApplication } from '../../lib/clubManager';
 
 interface ClubJoinFormProps {
   clubName: string;
@@ -18,7 +19,19 @@ export const ClubJoinForm: React.FC<ClubJoinFormProps> = ({ clubName, category, 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Mock submission delay
+    
+    // Save to local storage
+    saveApplication({
+      clubName,
+      name: formData.name,
+      email: formData.email,
+      year: formData.year,
+      role: formData.role,
+      interest: formData.interest,
+      experience: formData.experience
+    });
+
+    // Mock submission delay for UI effect
     setTimeout(() => {
       setIsSubmitting(false);
       setSuccess(true);

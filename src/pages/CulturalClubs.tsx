@@ -40,10 +40,9 @@ export const CulturalClubs: React.FC = () => {
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       category="Cultural"
-      accentColorClass="text-[#d4af37]"
-      accentBgClass="bg-[#d4af37]"
-      accentBorderClass="border-[#d4af37]"
-      accentShadowClass="shadow-[#d4af37]/20"
+      accentBgClass="bg-[#a1ff00]"
+      accentBorderClass="border-black"
+      accentShadowClass="shadow-neo"
       onAddClub={handleAddClub}
     >
        <DivisionLayoutEngine config={config} clubs={clubs} />

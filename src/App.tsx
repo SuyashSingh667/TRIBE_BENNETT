@@ -1,5 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/LandingPage';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import CulturalClubs from './pages/CulturalClubs';
 import TechnicalClubs from './pages/TechnicalClubs';
@@ -10,7 +9,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/cultural" element={<CulturalClubs />} />
         <Route path="/clubs/:id" element={<ClubDetails />} />
@@ -22,4 +21,3 @@ function App() {
 }
 
 export default App
-

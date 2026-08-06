@@ -145,7 +145,7 @@ export const mockData = {
       members: 250,
       icon: "code",
       gradientClass: "from-slate-600 to-slate-900",
-      image: "/clubs/codechef.jpg",
+      image: "/clubs/codechef.png",
       lead: "Suyash Singh",
       clubLeads: [
         {

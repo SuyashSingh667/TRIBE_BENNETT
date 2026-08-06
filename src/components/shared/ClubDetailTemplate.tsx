@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Canvas } from '@react-three/fiber';
-import { getClubVisuals, Starfield, RoadmapProgression } from './ClubVisualProfiles';
 import { ClubCriteriaMatrix } from './ClubCriteriaMatrix';
 import { ClubJoinForm } from './ClubJoinForm';
 import { ClubExplorePanel } from './ClubExplorePanel';
 import { ClubQuerySection } from './ClubQuerySection';
 import { EventDetailDrawer } from './EventDetailDrawer';
+import { getCurrentUserEmail } from '../../lib/clubManager';
+import { AdminEditModal } from './AdminEditModal';
 
 interface ClubDetailTemplateProps {
   club: any;
@@ -14,16 +14,17 @@ interface ClubDetailTemplateProps {
   accentBgClass: string;
 }
 
-export const ClubDetailTemplate: React.FC<ClubDetailTemplateProps> = ({ club, accentColorClass: _accentColorClass, accentBgClass }) => {
+export const ClubDetailTemplate: React.FC<ClubDetailTemplateProps> = ({ club, accentBgClass }) => {
   const navigate = useNavigate();
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showExploreModal, setShowExploreModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+
+  const currentUserEmail = getCurrentUserEmail();
 
   const isTech = club.originType === 'technical';
-  const viz = getClubVisuals(club.name, club.originType);
 
-  // Generate Insane Mock Projects based on Club Domain
   const generateMockProjects = () => {
     const name = club.name.toLowerCase();
     let titles = ['Genesis Protocol', 'Nexus Dashboard', 'Vector Framework', 'System Runtime'];
@@ -80,112 +81,106 @@ export const ClubDetailTemplate: React.FC<ClubDetailTemplateProps> = ({ club, ac
       title,
       image: images[i % images.length],
       tags: [tags[0], i % 2 === 0 ? tags[1] : tags[2] || tags[1]],
-      date: `2025 Q${(i%4)+1}`,
+      date: `2026 Q${(i%4)+1}`,
       size: i === 0 ? 'large' : i === 3 ? 'wide' : 'normal'
     }));
   };
 
   const projects = generateMockProjects();
-
-  const exploreLabel = isTech ? 'Explore Repository' : club.originType === 'cultural' ? 'Explore Showcase' : 'View Highlights';
   const exploreTitle = isTech ? 'System Repository' : club.originType === 'cultural' ? 'Creative Showcase' : 'Performance Highlights';
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-slate-100 font-display relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#fdfaf6] text-black font-display relative overflow-x-hidden selection:bg-pink-400 selection:text-black">
       
-      {/* ==============================================================
-          1. IMMERSIVE HERO SECTION
-          ============================================================== */}
-      <section className="relative w-full min-h-[85vh] flex flex-col pt-24 pb-12 px-6 md:px-12 lg:px-20 overflow-hidden">
-        {/* Dynamic Club World Background */}
-        <div className="absolute inset-0 z-0">
-           {viz.heroBg}
-        </div>
-        
-        {/* 3D Particles Contextual Mapping */}
-        <div className="absolute inset-0 z-0 opacity-40">
-           <Canvas camera={{ position: [0, 0, 1] }}>
-             <Starfield color={viz.particlesColor} />
-           </Canvas>
-        </div>
+      {/* Background Pattern */}
+      <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '30px 30px', opacity: 0.05 }} />
 
-        {/* Hero Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-transparent z-0" />
-
-        <div className="relative z-10 max-w-[1200px] w-full mx-auto my-auto flex flex-col md:flex-row items-center gap-16 lg:gap-24">
+      <section className="relative w-full pt-12 pb-12 px-6 md:px-12 lg:px-20 overflow-hidden z-10">
+        <div className="max-w-[1200px] w-full mx-auto my-auto flex flex-col gap-12">
           
-          {/* Badge & Identity Text */}
-          <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+          {/* Top Bar for Navigation/Admin */}
+          <div className="flex items-center justify-between w-full">
             <button 
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 mb-10 text-slate-500 hover:text-white transition-colors cursor-pointer w-fit group border border-[#222] px-4 py-2 rounded-full hover:bg-white/5 backdrop-blur-sm"
+              className="flex items-center gap-2 text-black border-[3px] border-black px-6 py-2 rounded-xl bg-white shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover transition-all cursor-pointer uppercase font-black tracking-widest text-xs"
             >
-              <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
-              <span className="font-bold uppercase tracking-widest text-[10px]">Return</span>
+              <span className="material-symbols-outlined text-sm">arrow_back</span>
+              Return
             </button>
-
-            <span className="px-4 py-1.5 border border-white/20 bg-black/40 backdrop-blur-md rounded-full text-white text-[10px] font-black uppercase tracking-[0.3em] mb-6 shadow-xl">
-              [ {club.category || 'Domain'} ] // {club.originType}
-            </span>
-
-            <h1 className="text-6xl md:text-[90px] lg:text-[110px] leading-[0.85] font-black tracking-tighter uppercase text-white drop-shadow-2xl mix-blend-screen group">
-               {club.name}
-            </h1>
             
-            <p className="text-sm md:text-md text-red-500 font-bold uppercase tracking-[0.3em] mt-6 mb-8 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">
-              {viz.tagline}
-            </p>
-
-            <p className="text-lg text-slate-300 font-medium leading-relaxed max-w-xl text-balance backdrop-blur-sm">
-              {club.description || "Entering dedicated infrastructure holding bay. Prepare to initiate deep domain protocols."}
-            </p>
-
-            <div className="flex flex-wrap items-center gap-4 mt-10">
-              <button 
-                onClick={() => setShowJoinModal(true)}
-                className="px-8 py-3.5 rounded-full bg-white text-black font-black hover:bg-slate-200 transition-all active:scale-95 uppercase tracking-widest text-xs shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-[0_0_40px_rgba(255,255,255,0.5)] flex items-center gap-3">
-                <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span></span>
-                Join Application
-              </button>
-              <button 
-                onClick={() => setShowExploreModal(true)}
-                className="px-8 py-3.5 rounded-full bg-black/50 backdrop-blur-md hover:bg-white hover:text-black text-white font-bold transition-all border border-[#333] active:scale-95 uppercase tracking-widest text-xs">
-                {exploreLabel}
-              </button>
-            </div>
+            <button 
+              onClick={() => setShowAdminModal(true)}
+              className="flex items-center gap-2 text-black bg-pink-400 border-[3px] border-black px-6 py-2 rounded-xl shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover transition-all cursor-pointer uppercase font-black tracking-widest text-xs"
+            >
+              <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
+              Admin Settings
+            </button>
           </div>
 
-          {/* Emble/Live Experience Element floating right */}
-          <div className="w-full md:w-[450px] shrink-0 relative animate-in fade-in slide-in-from-right-10 duration-1000">
-             {/* If we have a custom live panel from themes, show it. Otherwise fall back to the image */}
-             {viz.livePanel ? (
-               <div className="w-full relative z-10 group perspective-1000">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-[#111] rounded-[32px] blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
-                  <div className="relative transform-gpu transition-all duration-700 hover:rotate-y-[-5deg] hover:scale-105">
-                     {viz.livePanel}
-                  </div>
-               </div>
-             ) : (
-               <div className="w-64 h-64 mx-auto rounded-full overflow-hidden border-4 border-[#222] shadow-[0_0_50px_rgba(0,0,0,0.8)] relative z-10 bg-[#111]">
-                 {club.image && <div className="absolute inset-0 bg-cover bg-center" style={{backgroundImage:`url(${club.image})`}} />}
-               </div>
-             )}
+          {/* Main Hero Content */}
+          <div className="flex flex-col md:flex-row gap-16 lg:gap-24 items-center">
+            
+            {/* Left Column: Info */}
+            <div className="flex-1 flex flex-col items-start text-left justify-center">
+              <div className="flex flex-wrap items-center gap-4 mb-6">
+                <span className="px-4 py-1.5 border-[3px] border-black bg-[#ffde00] text-black text-[10px] font-black uppercase tracking-widest shadow-neo-sm rounded-lg flex items-center gap-2 w-max">
+                  <span>{club.category || 'Domain'}</span>
+                  <span className="w-1.5 h-1.5 bg-black rounded-full"></span>
+                  <span>{club.originType}</span>
+                </span>
+              </div>
 
-             {/* Floating Stats */}
-             <div className="absolute -bottom-8 -left-8 md:-left-16 p-4 rounded-2xl bg-black/80 backdrop-blur-xl border border-[#222] shadow-2xl flex flex-col z-20 animate-bounce" style={{animationDuration: '3s'}}>
-                <span className="text-[9px] text-slate-500 font-black tracking-widest uppercase mb-1">Active Operatives</span>
-                <span className="text-xl font-black text-white">{club.members || 'Unknown'}</span>
-             </div>
-             <div className="absolute -top-12 -right-8 p-4 rounded-2xl bg-[#111]/80 backdrop-blur-xl border border-red-900/30 shadow-[0_0_20px_rgba(220,38,38,0.2)] flex flex-col z-20 animate-pulse">
-                <span className="text-[9px] text-red-500 font-black tracking-widest uppercase mb-1">Node Lead</span>
-                <span className="text-sm font-black text-white">{club.lead || 'Admin'}</span>
-             </div>
+              <h1 className="text-5xl md:text-7xl lg:text-[80px] font-black tracking-tighter uppercase text-black mb-8 leading-[0.9]">
+                 {club.name}
+              </h1>
+              
+              <p className="text-black text-xl md:text-2xl font-bold mb-12 leading-relaxed max-w-2xl border-l-[6px] border-black pl-6">
+                {club.description || "Entering dedicated infrastructure holding bay. Prepare to initiate deep domain protocols."}
+              </p>
+
+              {club.registrationOpen !== false ? (
+                <button 
+                  onClick={() => setShowJoinModal(true)}
+                  className="px-8 py-4 rounded-xl bg-[#ffde00] border-[3px] border-black text-black font-black uppercase tracking-widest text-sm shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover transition-all active:scale-95 flex items-center gap-3">
+                  <span className="material-symbols-outlined font-black">person_add</span>
+                  Join Application
+                </button>
+              ) : (
+                <button 
+                  disabled
+                  className="px-8 py-4 rounded-xl bg-gray-300 border-[3px] border-gray-400 text-gray-500 font-black uppercase tracking-widest text-sm cursor-not-allowed flex items-center gap-3">
+                  <span className="material-symbols-outlined font-black">lock</span>
+                  Registrations Closed
+                </button>
+              )}
+            </div>
+
+            {/* Right Column: Visuals & Stats */}
+            <div className="w-full md:w-[450px] shrink-0 flex flex-col gap-6 animate-in fade-in slide-in-from-right-10 duration-1000">
+               <div className="w-full aspect-square rounded-[32px] overflow-hidden border-[4px] border-black shadow-neo bg-white p-10 flex items-center justify-center">
+                 {club.image ? (
+                    <img src={club.image} alt={club.name} className="w-full h-full object-contain" />
+                 ) : (
+                    <span className="material-symbols-outlined text-[100px] text-gray-800">group</span>
+                 )}
+               </div>
+
+               <div className="grid grid-cols-2 gap-6 w-full">
+                 <div className="p-6 rounded-[24px] bg-white border-[4px] border-black shadow-neo flex flex-col justify-center">
+                    <span className="text-[10px] text-black font-black tracking-widest uppercase mb-2">Active Operatives</span>
+                    <span className="text-4xl font-black text-black">{club.members || '250'}</span>
+                 </div>
+                 <div className="p-6 rounded-[24px] bg-pink-400 border-[4px] border-black shadow-neo flex flex-col justify-center">
+                    <span className="text-[10px] text-black font-black tracking-widest uppercase mb-2">Node Lead</span>
+                    <span className="text-xl font-black text-black leading-tight break-words">{club.lead || 'Admin'}</span>
+                 </div>
+               </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <div className="max-w-[1200px] mx-auto px-6 md:px-12 lg:px-20 relative z-10">
-
+      <div className="max-w-[1200px] mx-auto px-6 md:px-12 lg:px-20 relative z-10 pb-32 mt-12">
         {/* ==============================================================
             2. CLUB QUERY / CONTACT SECTION
             ============================================================== */}
@@ -200,23 +195,23 @@ export const ClubDetailTemplate: React.FC<ClubDetailTemplateProps> = ({ club, ac
             3. UPCOMING EVENTS / LIVE ACTIVITY
             ============================================================== */}
         {club.upcomingEvents && club.upcomingEvents.length > 0 && (
-          <section className="mb-32">
-            <div className="flex items-center gap-3 mb-10">
-              <div className={`w-3 h-8 ${accentBgClass} shadow-[0_0_15px_rgba(255,255,255,0.2)]`}></div>
-              <h2 className="text-4xl lg:text-5xl font-black uppercase tracking-tighter text-white">Upcoming Events</h2>
+          <section className="mb-24 mt-24">
+            <div className="flex items-center gap-4 mb-12">
+              <div className="w-4 h-12 bg-black"></div>
+              <h2 className="text-4xl lg:text-5xl font-black uppercase tracking-tighter text-black">Upcoming Events</h2>
             </div>
             
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {club.upcomingEvents.map((event: any, idx: number) => (
-                <div key={idx} onClick={() => setSelectedEvent(event)} className="relative p-8 rounded-[32px] bg-[#0a0a0a] border border-[#333] hover:border-white transition-all group overflow-hidden group hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)] cursor-pointer">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[40px] rounded-full pointer-events-none group-hover:bg-red-500/10 transition-colors"></div>
+                <div key={idx} onClick={() => setSelectedEvent(event)} className="relative p-8 rounded-[24px] bg-white border-[4px] border-black transition-all group overflow-hidden cursor-pointer shadow-neo hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-neo-hover flex flex-col">
                   
-                  <p className="text-red-500 font-black text-[10px] uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm">emergency_recording</span>
-                    {event.date}
-                  </p>
-                  <h3 className="text-2xl font-black text-white leading-tight mb-8 uppercase tracking-tighter">{event.title}</h3>
-                  <button className="text-[10px] font-black tracking-widest uppercase text-slate-500 group-hover:text-white flex items-center gap-2 transition-colors border-t border-[#222] pt-4 w-full justify-between">
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="px-3 py-1 bg-pink-400 text-black font-black text-[10px] uppercase tracking-[0.2em] border-[2px] border-black rounded-lg">
+                      {event.date}
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-black text-black leading-tight mb-8 uppercase tracking-tighter flex-1">{event.title}</h3>
+                  <button className="py-3 px-4 font-black tracking-widest uppercase text-black bg-[#ffde00] border-[3px] border-black rounded-xl text-xs flex items-center justify-center gap-3 transition-colors w-full group-hover:bg-black group-hover:text-white">
                     Access Details
                     <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
                   </button>
@@ -229,19 +224,23 @@ export const ClubDetailTemplate: React.FC<ClubDetailTemplateProps> = ({ club, ac
         {/* ==============================================================
             4. INTEGRATION PROTOCOLS / CRITERIA
             ============================================================== */}
-        <section className="mb-32">
-          <div className="flex items-center gap-3 mb-10">
-             <div className="w-3 h-8 bg-white shadow-[0_0_15px_rgba(255,255,255,0.2)]"></div>
-             <h2 className="text-4xl lg:text-5xl font-black uppercase tracking-tighter text-white">
+        <section className="mb-24 mt-24">
+          <div className="flex items-center gap-4 mb-12">
+             <div className="w-4 h-12 bg-black"></div>
+             <h2 className="text-4xl lg:text-5xl font-black uppercase tracking-tighter text-black">
                {isTech ? 'Joining Criteria' : 'Growth Roadmap'}
              </h2>
           </div>
-          {isTech ? <ClubCriteriaMatrix clubName={club.name} /> : <RoadmapProgression />}
+          <div className="bg-white border-[4px] border-black rounded-[24px] p-8 shadow-neo">
+             {isTech ? <ClubCriteriaMatrix clubName={club.name} customCriteria={club.criteria} /> : (
+                 <div className="text-black font-bold uppercase tracking-widest p-8 border-2 border-dashed border-black rounded-xl text-center">
+                     Roadmap module reconfiguring...
+                 </div>
+             )}
+          </div>
         </section>
 
       </div>
-
-      {/* Lightbox / Imprint Zoom Modal (Removed) */}
 
       {/* Modals & Portals */}
       {showJoinModal && (
@@ -264,7 +263,18 @@ export const ClubDetailTemplate: React.FC<ClubDetailTemplateProps> = ({ club, ac
       )}
       
       {selectedEvent && (
-        <EventDetailDrawer event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+        <EventDetailDrawer 
+          event={selectedEvent} 
+          onClose={() => setSelectedEvent(null)} 
+        />
+      )}
+
+      {showAdminModal && (
+        <AdminEditModal 
+          club={club} 
+          onClose={() => setShowAdminModal(false)} 
+          onSaved={() => window.location.reload()}
+        />
       )}
     </div>
   );

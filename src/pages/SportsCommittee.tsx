@@ -46,10 +46,9 @@ export const SportsCommittee: React.FC = () => {
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       category="Sports"
-      accentColorClass="text-[#dc2626]"
-      accentBgClass="bg-[#dc2626]"
-      accentBorderClass="border-[#dc2626]"
-      accentShadowClass="shadow-[#dc2626]/20"
+      accentBgClass="bg-pink-400"
+      accentBorderClass="border-black"
+      accentShadowClass="shadow-neo"
       onAddClub={handleAddClub}
     >
        <DivisionLayoutEngine config={config} clubs={clubs} />

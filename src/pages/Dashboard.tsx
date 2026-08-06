@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import cardBgImage from '../assets/card-bg.jpg';
 import EventModal from '../components/shared/EventModal';
 import { EventDetailDrawer } from '../components/shared/EventDetailDrawer';
-import { SettingsPanel } from '../components/shared/SettingsPanel';
 import { ClubDiscoveryAssistant } from '../components/shared/ClubDiscoveryAssistant';
 import { SharedHeaderUserArea } from '../components/shared/SharedHeaderUserArea';
 import { ProfilePanel } from '../components/shared/ProfilePanel';
@@ -105,7 +104,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [viewingEvent, setViewingEvent] = useState<TribeEvent | null>(null);
   const [showEventModal, setShowEventModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [showDiscoveryAssistant, setShowDiscoveryAssistant] = useState(false);
   
   // Master Calendar Overlay State
@@ -133,22 +131,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const filteredMasterEvents = events.filter(e => calendarFilter === 'All' ? true : e.type?.toLowerCase() === calendarFilter.toLowerCase());
 
   return (
-    <div className={`relative flex min-h-screen w-full flex-col overflow-x-hidden font-display bg-[#0a0a0a] text-slate-100 ${className}`} {...props}>
-      {/* Premium Ambient Background */}
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-red-600/5 blur-[200px] rounded-full pointer-events-none mix-blend-screen" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-white/5 blur-[150px] rounded-full pointer-events-none" />
-
+    <div className={`relative flex min-h-screen w-full flex-col overflow-x-hidden font-display bg-[#fdfaf6] text-black ${className}`} {...props}>
       {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-2xl border-b border-[#222] px-6 md:px-12 py-5 shadow-2xl">
+      <header className="sticky top-0 z-50 bg-white border-b-[4px] border-black px-6 md:px-12 py-5">
         <div className="max-w-screen-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <div className="size-10 bg-white rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform">
+            <div className="size-10 bg-[#ffde00] border-[3px] border-black rounded-xl flex items-center justify-center shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover transition-all">
               <span className="text-black font-black text-xl">T</span>
             </div>
             <button 
               onClick={() => setShowDiscoveryAssistant(true)}
-              className="hidden sm:flex items-center px-6 py-2.5 text-[10px] font-black tracking-[0.2em] uppercase bg-[#111] border border-[#333] text-slate-300 rounded-full hover:bg-white hover:text-black hover:border-white transition-all shadow-lg active:scale-95 cursor-pointer">
-              <span className="material-symbols-outlined text-[14px] mr-2">smart_toy</span>
+              className="hidden sm:flex items-center px-6 py-2.5 text-[10px] font-black tracking-[0.2em] uppercase bg-white border-[3px] border-black text-black rounded-full hover:bg-gray-100 shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover transition-all active:scale-95 cursor-pointer">
+              <span className="material-symbols-outlined text-[14px] mr-2 font-black">smart_toy</span>
               UNSURE WHAT TO JOIN?
             </button>
           </div>
@@ -156,18 +150,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setShowMasterCalendar(true)}
-              className="px-6 py-2.5 rounded-full bg-[#111] hover:bg-white hover:text-black border border-[#333] hover:border-white text-slate-300 flex items-center gap-3 transition-all tracking-widest text-[10px] font-black uppercase shadow-lg active:scale-95"
+              className="px-6 py-2.5 rounded-full bg-pink-400 border-[3px] border-black text-black flex items-center gap-3 transition-all tracking-widest text-[10px] font-black uppercase shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover active:scale-95"
             >
-              <span className="material-symbols-outlined text-sm">calendar_month</span>
+              <span className="material-symbols-outlined text-sm font-black">calendar_month</span>
               <span className="hidden sm:inline">Master Calendar</span>
             </button>
-            <div className="w-px h-6 bg-[#333] mx-2"></div>
-            <button 
-              onClick={() => setShowSettings(!showSettings)}
-              className={`size-10 rounded-full flex items-center justify-center transition-all border ${showSettings ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.4)]' : 'bg-[#111] border-[#333] text-slate-300 hover:text-white hover:border-slate-500 hover:bg-[#222]'}`}
-            >
-              <span className="material-symbols-outlined text-sm">{showSettings ? 'close' : 'settings'}</span>
-            </button>
+
+            <div className="w-1 h-6 bg-black mx-2"></div>
+            
             <SharedHeaderUserArea setActiveTab={(tab) => { if (tab === 'profile') setShowProfileModal(true) }} />
           </div>
         </div>
@@ -175,100 +165,80 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Main Content */}
       <main className="max-w-screen-2xl mx-auto w-full px-6 md:px-12 py-12 flex-1 flex flex-col relative z-20">
-        {showSettings ? (
-          <SettingsPanel />
-        ) : (
           <div className="animate-in fade-in slide-in-from-bottom-10 duration-700">
-            {/* Premium Hero Section */}
-            <section className="relative p-12 lg:p-20 rounded-[40px] bg-gradient-to-br from-[#111] to-[#0a0a0a] border border-[#222] overflow-hidden mb-12 shadow-[0_40px_100px_rgba(0,0,0,0.8)] group h-[400px] flex flex-col justify-center">
-              {/* Subtle 3D Depth Layer */}
-              <div className="absolute inset-0 z-0 mix-blend-screen opacity-50">
-                <Canvas camera={{ position: [0, 0, 5] }}>
-                  <FloatingGalacticSpace />
-                </Canvas>
-              </div>
-
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672&auto=format&fit=crop')] opacity-10 bg-cover bg-center mix-blend-screen group-hover:scale-105 group-hover:opacity-20 transition-all duration-1000 z-0"></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80 z-0" />
-              
-              <div className="relative z-10 flex flex-col items-start max-w-3xl pointer-events-none">
-                <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-black/50 border border-white/10 text-white text-[10px] font-black tracking-[0.3em] uppercase mb-8 backdrop-blur-md shadow-2xl">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
+            {/* Neo-brutalist Hero Section */}
+            <section className="relative p-12 lg:p-20 rounded-[20px] bg-white border-[4px] border-black overflow-hidden mb-12 shadow-neo h-[400px] flex flex-col justify-center">
+              <div className="relative z-10 flex flex-col items-start max-w-3xl">
+                <div className="inline-flex items-center gap-3 px-5 py-2 rounded-xl bg-[#a1ff00] border-[3px] border-black text-black text-[10px] font-black tracking-[0.2em] uppercase mb-8 shadow-neo-sm">
+                  <span className="w-2.5 h-2.5 rounded-full bg-white border-2 border-black animate-pulse"></span>
                   Active Control Center
                 </div>
                 
-                <h1 className="text-5xl sm:text-6xl md:text-[80px] font-black mb-6 tracking-tighter uppercase leading-[0.9] text-white drop-shadow-2xl">
+                <h1 className="text-5xl sm:text-6xl md:text-[80px] font-black mb-6 tracking-tighter uppercase leading-[0.9] text-black">
                   {dashboard.hero.title}
                 </h1>
                 
-                <p className="text-slate-400 text-lg md:text-xl leading-relaxed font-medium mb-10 border-l-2 border-red-600/50 pl-6 bg-gradient-to-r from-red-600/5 to-transparent py-2">
+                <p className="text-black text-lg md:text-xl leading-relaxed font-bold mb-10 border-l-[4px] border-black pl-6 bg-[#fff8d6] py-2">
                   {dashboard.hero.description}
                 </p>
               </div>
             </section>
 
-            {/* Dimensional Portal Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16">
-              {dashboard.cards.map((card) => (
+            {/* Folder-style Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+              {dashboard.cards.map((card, index) => {
+                const colors = ['bg-[#ffde00]', 'bg-[#ff90e8]', 'bg-[#a1ff00]'];
+                const bgColor = colors[index % colors.length];
+                return (
                 <Link
                   key={card.id}
                   to={card.path}
-                  className="group relative overflow-hidden rounded-[40px] bg-[#0a0a0a] border border-[#222] p-8 md:p-10 flex flex-col justify-between min-h-[460px] cursor-pointer shadow-2xl hover:border-slate-500 hover:shadow-[0_20px_80px_rgba(255,255,255,0.05)] hover:-translate-y-2 transition-all duration-500"
+                  className={`group relative overflow-hidden rounded-[20px] ${bgColor} border-[4px] border-black p-8 md:p-10 flex flex-col justify-between min-h-[460px] cursor-pointer shadow-neo hover:-translate-y-2 hover:shadow-neo-hover transition-all duration-300`}
                 >
-                  {/* Cinematic Background Layer */}
-                  <div 
-                    className="absolute inset-0 bg-cover bg-center z-0 opacity-10 group-hover:scale-110 group-hover:opacity-40 transition-all duration-700 mix-blend-luminosity grayscale group-hover:grayscale-0"
-                    style={{ backgroundImage: `url(${cardBgImage})` }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/90 to-transparent z-0" />
-                  <div className={`absolute inset-0 bg-gradient-to-br ${card.gradientClass} z-0 opacity-20 group-hover:opacity-60 transition-opacity duration-500`} />
-
                   {/* Watermark Icon */}
-                  <div className="absolute top-0 right-[-10%] p-8 opacity-5 group-hover:opacity-20 group-hover:rotate-12 transition-all duration-700 group-hover:scale-125 transform origin-center mix-blend-screen pointer-events-none">
-                    <span className={`material-symbols-outlined text-[200px] ${card.textClass}`}>{card.bgIcon}</span>
+                  <div className="absolute top-1/4 right-[-10%] p-8 opacity-20 group-hover:opacity-30 group-hover:rotate-12 transition-all duration-500 group-hover:scale-110 transform origin-center pointer-events-none text-black">
+                    <span className={`material-symbols-outlined text-[240px] font-black`}>{card.bgIcon}</span>
                   </div>
 
                   {/* Content Hub */}
                   <div className="relative z-10 flex flex-col h-full">
-                    <div className="size-16 rounded-2xl flex items-center justify-center mb-auto border border-white/10 bg-black/40 backdrop-blur-xl text-white shadow-2xl group-hover:scale-110 transition-transform">
-                      <span className="material-symbols-outlined text-3xl">{card.icon}</span>
+                    <div className="size-14 rounded-xl flex items-center justify-center mb-auto border-[3px] border-black bg-white text-black shadow-neo-sm group-hover:scale-110 transition-transform">
+                      <span className="material-symbols-outlined text-2xl font-black">{card.icon}</span>
                     </div>
                     
-                    <div className="mt-8 transition-transform duration-500 group-hover:translate-y-[-10px]">
-                      <h3 className="text-3xl lg:text-4xl font-black mb-4 uppercase tracking-tighter text-white drop-shadow-lg">{card.title}</h3>
-                      <p className="text-slate-400 leading-relaxed font-medium text-sm mb-8 line-clamp-3 group-hover:text-slate-200 transition-colors">{card.description}</p>
+                    <div className="mt-8 transition-transform duration-500 group-hover:translate-y-[-5px]">
+                      <h3 className="text-3xl lg:text-4xl font-black mb-4 uppercase tracking-tighter text-black">{card.title}</h3>
+                      <p className="text-black font-bold text-sm mb-8 line-clamp-3">{card.description}</p>
                       
-                      <div className="flex items-center gap-4 border-t border-[#333] pt-6 group-hover:border-white/30 transition-colors">
-                        <span className="text-[10px] font-black tracking-[0.2em] uppercase text-white group-hover:text-red-500 transition-colors">
+                      <div className="flex items-center gap-4 border-t-[3px] border-black pt-6">
+                        <span className="text-[10px] font-black tracking-[0.2em] uppercase text-black">
                           Deploy Module
                         </span>
-                        <div className="size-8 rounded-full bg-white text-black flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-colors">
-                          <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        <div className="size-8 rounded-full bg-white border-[3px] border-black text-black flex items-center justify-center shadow-neo-sm group-hover:bg-black group-hover:text-white transition-colors">
+                          <span className="material-symbols-outlined text-sm font-black">arrow_forward</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </Link>
-              ))}
+                );
+              })}
             </div>
 
-            {/* PREMIUM INTERACTIVE DASHBOARD CALENDAR */}
-            <section className="mb-12 p-8 md:p-12 bg-gradient-to-br from-[#111] to-[#0a0a0a] border border-[#222] rounded-[40px] shadow-2xl relative overflow-hidden group hover:border-[#333] transition-colors">
-              <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-red-600/5 blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
+            {/* NEO-BRUTALIST INTERACTIVE DASHBOARD CALENDAR */}
+            <section className="mb-12 p-8 md:p-12 bg-white border-[4px] border-black rounded-[20px] shadow-neo relative overflow-hidden group">
               
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 relative z-10">
                 <div>
-                  <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-white mb-2 uppercase drop-shadow-lg">Global Intel</h2>
+                  <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-black mb-2 uppercase">Global Intel</h2>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-1 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.6)]"></div>
-                    <p className="text-xs font-black text-slate-400 tracking-[0.3em] uppercase">Event Calendar</p>
+                    <div className="w-8 h-1 bg-black"></div>
+                    <p className="text-xs font-black text-black tracking-[0.3em] uppercase">Event Calendar</p>
                   </div>
                 </div>
+                
                 <div className="flex gap-4">
-                  <button onClick={() => { setEditingEvent(null); setShowEventModal(true); }} className="px-8 py-3 rounded-2xl bg-[#0a0a0a] border border-[#333] text-white font-black text-[10px] tracking-widest uppercase hover:bg-[#222] hover:border-slate-500 transition-all shadow-[0_10px_20px_rgba(0,0,0,0.5)] active:scale-95">
-                    New Action
-                  </button>
-                  <button onClick={() => setShowMasterCalendar(true)} className="px-8 py-3 rounded-2xl bg-white text-black font-black text-[10px] tracking-[0.2em] uppercase hover:bg-slate-200 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.2)] active:scale-95">
+                  <button onClick={() => setShowMasterCalendar(true)} className="px-8 py-3 rounded-xl bg-white border-[3px] border-black text-black font-black text-[10px] tracking-[0.2em] uppercase hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover shadow-neo-sm active:scale-95 transition-all">
                     Execute Master View
                   </button>
                 </div>
@@ -276,15 +246,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
               <div className="grid lg:grid-cols-3 gap-16 relative z-10">
                 {/* Visual Interactive Month Grid */}
-                <div className="lg:col-span-1">
-                  <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#333] cursor-pointer group-hover:border-slate-500 max-w-[300px]" onClick={() => setShowMasterCalendar(true)}>
-                     <h3 className="text-2xl font-black text-white uppercase tracking-tighter group-hover:text-red-500 transition-colors">May 2026</h3>
-                     <span className="material-symbols-outlined text-slate-500 group-hover:text-white transition-colors">open_in_new</span>
+                <div className="lg:col-span-1 border-[3px] border-black p-6 rounded-[20px] bg-white shadow-neo-sm">
+                  <div className="flex items-center justify-between mb-8 pb-4 border-b-[3px] border-black cursor-pointer group-hover:border-black max-w-[300px]" onClick={() => setShowMasterCalendar(true)}>
+                     <h3 className="text-2xl font-black text-black uppercase tracking-tighter">May 2026</h3>
+                     <span className="material-symbols-outlined text-black font-black">open_in_new</span>
                   </div>
                   
                   <div className="grid grid-cols-7 gap-3 max-w-[300px]">
                     {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, index) => (
-                      <div key={index} className="text-center text-[10px] font-black text-slate-600 py-2 uppercase">{d}</div>
+                      <div key={index} className="text-center text-[10px] font-black text-black py-2 uppercase">{d}</div>
                     ))}
                     {Array.from({ length: 35 }).map((_, i) => {
                       const daysInMonth = 31;
@@ -304,13 +274,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             }
                           }}
                           className={`aspect-square flex flex-col items-center justify-center rounded-xl text-xs font-bold transition-all
-                            ${!isCurrentMonth ? 'text-transparent cursor-default pointer-events-none' : 'text-slate-400 hover:bg-[#222] cursor-pointer hover:-translate-y-1 hover:shadow-lg'}
-                            ${hasEvent ? 'bg-[#222] text-white border border-[#444] shadow-[0_0_15px_rgba(255,255,255,0.05)]' : 'bg-[#0a0a0a] border border-[#1a1a1a]'}
-                            ${isSelected ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.4)] scale-110 z-10' : ''}
+                            ${!isCurrentMonth ? 'text-transparent cursor-default pointer-events-none' : 'text-black hover:bg-black hover:text-white cursor-pointer border-[2px] border-transparent'}
+                            ${hasEvent ? 'bg-[#ffde00] border-[2px] border-black shadow-neo-sm font-black' : ''}
+                            ${isSelected ? 'bg-black text-white shadow-neo-sm scale-110 z-10' : ''}
                           `}
                         >
                           {isCurrentMonth ? day : ''}
-                          {hasEvent && !isSelected && <div className="mt-1 w-1.5 h-1.5 bg-red-500 rounded-full shadow-[0_0_5px_rgba(220,38,38,0.8)]"></div>}
                         </div>
                       );
                     })}
@@ -318,44 +287,46 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 {/* Event Sidebar Details */}
-                <div className="lg:col-span-2 flex flex-col h-full border-l border-[#222] pl-0 lg:pl-16">
+                <div className="lg:col-span-2 flex flex-col h-full pl-0 lg:pl-16">
                   <div className="flex items-center justify-between mb-8">
-                     <h3 className="text-[10px] font-black text-slate-500 tracking-[0.3em] uppercase">
+                     <h3 className="text-[10px] font-black text-black tracking-[0.3em] uppercase">
                         {selectedDate ? `Telemetry Log: MAY ${selectedDate}` : 'Upcoming Architecture'}
                      </h3>
                      {selectedDate && (
-                       <button onClick={() => setSelectedDate(null)} className="text-[10px] text-red-500 font-bold uppercase tracking-widest hover:text-white transition-colors">Clear Filter</button>
+                        <button onClick={() => setSelectedDate(null)} className="text-[10px] font-black tracking-wider uppercase text-black hover:bg-gray-100 px-3 py-1 rounded-md transition-colors">
+                          Clear Target
+                        </button>
                      )}
                   </div>
                   
                   <div className="flex-1 flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar max-h-[360px]">
                     {events.filter(e => selectedDate ? e.day === selectedDate : true).length === 0 ? (
-                      <div className="flex-1 border border-dashed border-[#333] rounded-[32px] flex flex-col items-center justify-center p-12 bg-[#0a0a0a]/50">
-                         <span className="material-symbols-outlined text-4xl text-slate-700 mb-4">radar</span>
-                         <p className="text-slate-500 font-black uppercase tracking-[0.2em] text-[10px]">No telemetry detected.</p>
+                      <div className="flex-1 border-[3px] border-dashed border-black rounded-[20px] flex flex-col items-center justify-center p-12 bg-white">
+                         <span className="material-symbols-outlined text-4xl text-black mb-4 font-black">radar</span>
+                         <p className="text-black font-black uppercase tracking-[0.2em] text-[10px]">No events detected.</p>
                       </div>
                     ) : (
                       events
                       .filter(e => selectedDate ? e.day === selectedDate : true)
                       .slice(0, selectedDate ? undefined : 4)
                       .map((ev, i) => (
-                        <div key={ev.id || i} onClick={() => setViewingEvent(ev)} className="group flex flex-col sm:flex-row sm:items-center gap-6 p-6 rounded-[24px] bg-[#0a0a0a] border border-[#222] hover:border-[#555] cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+                        <div key={ev.id || i} onClick={() => setViewingEvent(ev)} className="group flex flex-col sm:flex-row sm:items-center gap-6 p-6 rounded-[20px] bg-white border-[3px] border-black hover:bg-yellow-100 cursor-pointer shadow-neo-sm hover:-translate-y-1 hover:shadow-neo-hover transition-all duration-300">
                           
-                          <div className="w-20 shrink-0 flex flex-col justify-center border-l-2 border-red-600 pl-4">
-                            <span className="text-white font-black text-2xl tracking-tighter leading-none mb-1">{ev.date.split(' ')[1]}</span>
-                            <span className="text-slate-500 text-[10px] font-black tracking-[0.2em] uppercase">{ev.date.split(' ')[0]}</span>
+                          <div className="w-20 shrink-0 flex flex-col justify-center border-l-[4px] border-black pl-4">
+                            <span className="text-black font-black text-2xl tracking-tighter leading-none mb-1">{ev.date.split(' ')[1]}</span>
+                            <span className="text-black text-[10px] font-black tracking-[0.2em] uppercase">{ev.date.split(' ')[0]}</span>
                           </div>
                           
                           <div className="flex-1 flex flex-col justify-center">
                             <div className="flex flex-wrap items-center gap-3 mb-2">
-                              <span className="px-2.5 py-1 rounded-md bg-[#222] text-slate-300 text-[9px] font-black tracking-widest uppercase border border-[#333]">{ev.type || 'Event'}</span>
-                              <span className="text-slate-400 text-[10px] font-black tracking-widest uppercase">{ev.org || 'System Core'}</span>
+                              <span className="px-2.5 py-1 rounded-md bg-white border-[2px] border-black text-black text-[9px] font-black tracking-widest uppercase shadow-neo-sm">{ev.type || 'Event'}</span>
+                              <span className="text-black text-[10px] font-black tracking-widest uppercase">{ev.org || 'System Core'}</span>
                             </div>
-                            <h4 className="text-lg font-black text-white tracking-tighter uppercase leading-tight line-clamp-1">{ev.title}</h4>
+                            <h4 className="text-lg font-black text-black tracking-tighter uppercase leading-tight line-clamp-1">{ev.title}</h4>
                           </div>
                           
-                          <div className="shrink-0 size-12 rounded-full border border-[#333] flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
-                            <span className="material-symbols-outlined text-sm">visibility</span>
+                          <div className="shrink-0 size-12 rounded-full border-[3px] border-black bg-white text-black flex items-center justify-center shadow-neo-sm group-hover:bg-black group-hover:text-white transition-all">
+                            <span className="material-symbols-outlined text-sm font-black">visibility</span>
                           </div>
 
                         </div>
@@ -363,7 +334,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     )}
 
                     {!selectedDate && events.length > 4 && (
-                      <button onClick={() => setShowMasterCalendar(true)} className="mt-4 py-5 text-[10px] font-black tracking-[0.2em] uppercase text-slate-400 hover:text-black hover:bg-white transition-all text-center w-full bg-[#111] border border-[#333] rounded-[24px] shadow-lg">
+                      <button onClick={() => setShowMasterCalendar(true)} className="mt-4 py-5 text-[10px] font-black tracking-[0.2em] uppercase text-black bg-white hover:bg-yellow-100 transition-all text-center w-full border-[3px] border-black rounded-[20px] shadow-neo-sm hover:-translate-y-1 hover:shadow-neo-hover">
                          Load Full Event Calendar ({events.length} Modules)
                       </button>
                     )}
@@ -372,7 +343,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
             </section>
           </div>
-        )}
       </main>
 
       {/* MASTER UNIFIED CALENDAR OVERLAY */}
