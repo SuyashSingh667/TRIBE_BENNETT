@@ -1,96 +1,36 @@
 import React, { useState, useMemo } from 'react';
 import { mockData } from '../data/mockData';
 import { Link } from 'react-router-dom';
-import cardBgImage from '../assets/card-bg.jpg';
 import EventModal from '../components/shared/EventModal';
 import { EventDetailDrawer } from '../components/shared/EventDetailDrawer';
 import { ClubDiscoveryAssistant } from '../components/shared/ClubDiscoveryAssistant';
-import { SharedHeaderUserArea } from '../components/shared/SharedHeaderUserArea';
 import { ProfilePanel } from '../components/shared/ProfilePanel';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial } from '@react-three/drei';
-import * as random from 'maath/random/dist/maath-random.esm';
-
-const FloatingGalacticSpace = ({ count = 3000 }) => {
-  const ref = React.useRef<any>(null);
-  const [positions] = useState<any>(() => random.inSphere(new Float32Array(count * 3), { radius: 10 }));
-  useFrame((_, delta) => {
-    if (ref.current) {
-      ref.current.rotation.x -= delta / 15;
-      ref.current.rotation.y -= delta / 20;
-    }
-  });
-  return (
-    <group rotation={[0, 0, Math.PI / 4]}>
-      <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
-        <PointMaterial transparent color="#ffffff" size={0.015} sizeAttenuation={true} depthWrite={false} opacity={0.4} />
-      </Points>
-    </group>
-  );
-};
+import SidebarLayout from '../components/layout/SidebarLayout';
+import { getCollisionFreeMasterEvents } from '../lib/clubManager';
+import type { TribeEvent as SharedTribeEvent } from '../lib/clubManager';
 
 interface DashboardProps {
   readonly children?: React.ReactNode;
   readonly className?: string;
 }
 
-export interface TribeEvent {
-  id?: string;
-  date: string;
-  day: number;
-  month?: number;
-  year?: number;
-  time?: string;
-  title: string;
-  org?: string;
-  type?: string;
-  description?: string;
-}
+export type TribeEvent = SharedTribeEvent;
 
 export const Dashboard: React.FC<DashboardProps> = ({
   className = '',
   ...props
 }) => {
-  const { dashboard, globalEvents } = mockData;
+  const { dashboard } = mockData;
 
-  // Synthesize master events array from all possible club events + global events
   const masterEvents = useMemo(() => {
-    let combined: TribeEvent[] = [...(globalEvents || [])];
-    
-    // Inject cultural events dynamically to ensure the calendar is heavily populated
-    if (mockData.culturalClubs) {
-      mockData.culturalClubs.forEach((club: any) => {
-        if (club.upcomingEvents) {
-          club.upcomingEvents.forEach((ev: any) => {
-            const match = ev.date?.match(/(\w+)\s+(\d+)/);
-            if (match) {
-              combined.push({
-                id: `cultural-${club.name}-${match[2]}`,
-                title: ev.title,
-                org: club.name,
-                type: 'Cultural',
-                date: `MAY ${match[2]}`,
-                day: parseInt(match[2]),
-                month: 5,
-                year: 2026,
-                description: `${club.name} is hosting ${ev.title}. Join the community to participate.`
-              });
-            }
-          });
-        }
-      });
-    }
-
-    // Sort to keep timeline chronologically stable
-    return combined.sort((a,b) => a.day - b.day);
-  }, [globalEvents]);
+    return getCollisionFreeMasterEvents();
+  }, []);
 
   const [events, setEvents] = useState<TribeEvent[]>(() => {
     const saved = localStorage.getItem('tribe_events');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Merge saved local events with the synthesized mock data
         return [...masterEvents, ...parsed].filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i);
       } catch {
         return masterEvents;
@@ -105,14 +45,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [showEventModal, setShowEventModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showDiscoveryAssistant, setShowDiscoveryAssistant] = useState(false);
-  
-  // Master Calendar Overlay State
-  const [showMasterCalendar, setShowMasterCalendar] = useState(false);
-  const [calendarFilter, setCalendarFilter] = useState('All');
 
   const saveEvents = (newEvents: TribeEvent[]) => {
     setEvents(newEvents);
-    // Only persist custom created ones ideally to save quota, but for mock purposes we'll stringify
     localStorage.setItem('tribe_events', JSON.stringify(newEvents));
   };
 
@@ -128,321 +63,173 @@ export const Dashboard: React.FC<DashboardProps> = ({
     setShowEventModal(false);
   };
 
-  const filteredMasterEvents = events.filter(e => calendarFilter === 'All' ? true : e.type?.toLowerCase() === calendarFilter.toLowerCase());
-
   return (
-    <div className={`relative flex min-h-screen w-full flex-col overflow-x-hidden font-display bg-[#fdfaf6] text-black ${className}`} {...props}>
-      {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-white border-b-[4px] border-black px-6 md:px-12 py-5">
-        <div className="max-w-screen-2xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="size-10 bg-[#ffde00] border-[3px] border-black rounded-xl flex items-center justify-center shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover transition-all">
-              <span className="text-black font-black text-xl">T</span>
-            </div>
-            <button 
-              onClick={() => setShowDiscoveryAssistant(true)}
-              className="hidden sm:flex items-center px-6 py-2.5 text-[10px] font-black tracking-[0.2em] uppercase bg-white border-[3px] border-black text-black rounded-full hover:bg-gray-100 shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover transition-all active:scale-95 cursor-pointer">
-              <span className="material-symbols-outlined text-[14px] mr-2 font-black">smart_toy</span>
-              UNSURE WHAT TO JOIN?
-            </button>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setShowMasterCalendar(true)}
-              className="px-6 py-2.5 rounded-full bg-pink-400 border-[3px] border-black text-black flex items-center gap-3 transition-all tracking-widest text-[10px] font-black uppercase shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover active:scale-95"
-            >
-              <span className="material-symbols-outlined text-sm font-black">calendar_month</span>
-              <span className="hidden sm:inline">Master Calendar</span>
-            </button>
-
-            <div className="w-1 h-6 bg-black mx-2"></div>
-            
-            <SharedHeaderUserArea setActiveTab={(tab) => { if (tab === 'profile') setShowProfileModal(true) }} />
-          </div>
+    <SidebarLayout>
+      {/* Hero Section */}
+      <section className="relative w-full h-[600px] rounded-xl overflow-hidden flex items-center justify-center text-center shadow-md animate-in fade-in duration-700">
+        <div className="absolute inset-0 z-0">
+          <div className="w-full h-full bg-cover" style={{ backgroundImage: "url('/dashboard_bg_new.jpg')", backgroundPosition: 'center 60%' }}></div>
+          <div className="absolute inset-0 bg-primary/20 mix-blend-multiply"></div>
+          <div className="texture-overlay"></div>
         </div>
-      </header>
+        <div className="relative z-10 px-6 py-12 bg-background/80 backdrop-blur-sm border border-outline-variant rounded-lg max-w-2xl shadow-xl">
+          <div className="flex items-center justify-center space-x-4 mb-6">
+            <div className="h-[1px] w-12 bg-tertiary"></div>
+            <span className="text-label-caps font-label-caps text-tertiary tracking-widest">ACTIVE CONTROL CENTER</span>
+            <div className="h-[1px] w-12 bg-tertiary"></div>
+          </div>
+          <h1 className="text-headline-lg-mobile md:text-headline-xl font-headline-xl text-primary mb-6">Explore Your Realm</h1>
+          <p className="text-body-lg font-body-lg text-on-surface-variant max-w-2xl mx-auto">
+             {dashboard.hero.description}
+          </p>
+        </div>
+      </section>
 
-      {/* Main Content */}
-      <main className="max-w-screen-2xl mx-auto w-full px-6 md:px-12 py-12 flex-1 flex flex-col relative z-20">
-          <div className="animate-in fade-in slide-in-from-bottom-10 duration-700">
-            {/* Neo-brutalist Hero Section */}
-            <section className="relative p-12 lg:p-20 rounded-[20px] bg-white border-[4px] border-black overflow-hidden mb-12 shadow-neo h-[400px] flex flex-col justify-center">
-              <div className="relative z-10 flex flex-col items-start max-w-3xl">
-                <div className="inline-flex items-center gap-3 px-5 py-2 rounded-xl bg-[#a1ff00] border-[3px] border-black text-black text-[10px] font-black tracking-[0.2em] uppercase mb-8 shadow-neo-sm">
-                  <span className="w-2.5 h-2.5 rounded-full bg-white border-2 border-black animate-pulse"></span>
-                  Active Control Center
-                </div>
-                
-                <h1 className="text-5xl sm:text-6xl md:text-[80px] font-black mb-6 tracking-tighter uppercase leading-[0.9] text-black">
-                  {dashboard.hero.title}
-                </h1>
-                
-                <p className="text-black text-lg md:text-xl leading-relaxed font-bold mb-10 border-l-[4px] border-black pl-6 bg-[#fff8d6] py-2">
-                  {dashboard.hero.description}
-                </p>
+      {/* Category Cards */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-gutter mt-16 animate-in slide-in-from-bottom-8 duration-700 delay-100">
+        {dashboard.cards.map((card, index) => {
+          
+          const isPrimary = index === 1; // Middle card Cultural is Primary
+          const cardBgClass = isPrimary ? 'bg-primary' : 'bg-surface';
+          const textColor = isPrimary ? 'text-on-primary' : 'text-on-surface';
+          const textVariant = isPrimary ? 'text-on-primary/80' : 'text-on-surface-variant';
+          const buttonHover = isPrimary ? 'group-hover:text-tertiary-fixed' : 'group-hover:text-tertiary';
+          const bgOpacity = isPrimary ? 'opacity-30 group-hover:opacity-40' : 'opacity-40 group-hover:opacity-30';
+          
+          const bgImages = [
+            'https://lh3.googleusercontent.com/aida-public/AB6AXuBMDhSo1D3sk0bVJ2AmFebVD--C5kACEYSCXthiV_0SjP985w_vq15esoeRUJgiF7Rh8PspvwubUBIaSN3M-cH_xjUWQz0fBA5-TKQxxoF1dMb_kiSKV-x1afwSqRQy1gwsI3MTEry7549hERl95cNqcXxpn2tLGyDCxJtqodvkfk6jPn_cqDQ4vDCM4KuKIlL98z0R3-fRgT4-V-E9fym64y1HaWEuN2rHd8sm0k2TMQqdwFlzfqhh6ZSRPiFX7cuDvTk',
+            'https://lh3.googleusercontent.com/aida-public/AB6AXuDD3oqKY0RxMUl6S0TqVoFzdJ6WoCmc6j684NbFQIHh5DjlNr85YB_g5FdjCv6ijEUeuQnP-eUBAZhCnUS5IMy7KB3gWxpUveJioHEoeVbmOrmamkUbKe7HNO0C1I_OvmD1LEKdBtyTpMBoXSeV1uSE8_mr8sabF21UCwWpZdgkdds5P1_lo_ePBHny0TQjGog5xcsnJ7GZZyxIi5t4F3ZGWTWjwyCRHeCn0m80vwVUAiVx-lvuRmwk-g',
+            'https://lh3.googleusercontent.com/aida-public/AB6AXuBlDITCcXQOMtpkCSbD8dseZ5HbeUlFO0F0ROrWe1cY2RazIxIuzR2CQF6wq44lF3P1dTMP5Jv_7ZLjPdoGsIX_ypIaCbsbbHjj5EoByer4n-VK7QMHHSVcJGFpUG3d8mcuU8mBhuTwlaJtVWyp2fOugZFjJUkeYdcgtqlCU_c6-bs8o6QG-U8hxBkt0O1waCgWHfTVPkwS-E6HQkMu42t5OAbWERfG6qo2Pz7F2acC-yexLpKMjciLIA'
+          ];
+          
+          const customStyle = index === 0 
+            ? { backgroundImage: `url('${bgImages[index]}')`, backgroundBlendMode: 'multiply' as any, backgroundColor: '#1a2e1a' }
+            : { backgroundImage: `url('${bgImages[index]}')` };
+
+          return (
+            <Link
+              key={card.id}
+              to={card.path}
+              className={`group relative h-[400px] arch-card gold-border overflow-hidden ${cardBgClass} flex flex-col items-center justify-center text-center p-8 transition-transform hover:-translate-y-2 duration-300 shadow-md hover:shadow-xl`}
+            >
+              <div className={`absolute inset-0 transition-opacity ${bgOpacity}`}>
+                <div className="w-full h-full bg-cover bg-center" style={customStyle}></div>
               </div>
-            </section>
+              <div className="relative z-10 flex flex-col items-center space-y-6">
+                <div className="w-16 h-16 rounded-full border border-tertiary flex items-center justify-center bg-background text-primary shadow-sm">
+                  <span className="material-symbols-outlined text-3xl">{card.icon}</span>
+                </div>
+                <h2 className={`text-headline-md font-headline-md ${textColor}`}>{card.title}</h2>
+                <p className={`text-body-md font-body-md ${textVariant} max-w-[200px]`}>{card.description}</p>
+                <div className={`mt-8 flex items-center space-x-2 ${isPrimary ? 'text-on-primary' : 'text-primary'} font-label-caps text-label-caps ${buttonHover} transition-colors`}>
+                  <span>{card.actionText || 'EXPLORE'}</span>
+                  <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                </div>
+              </div>
+            </Link>
+          );
+        })}
+      </section>
 
-            {/* Folder-style Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-              {dashboard.cards.map((card, index) => {
-                const colors = ['bg-[#ffde00]', 'bg-[#ff90e8]', 'bg-[#a1ff00]'];
-                const bgColor = colors[index % colors.length];
+      {/* Intelligence Section */}
+      <section className="bg-surface-container-low rounded-xl border border-outline-variant p-8 md:p-12 mt-24 shadow-sm relative">
+        <div className="flex flex-col md:flex-row justify-between items-start mb-12">
+          <div>
+            <h2 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-primary mb-2">Global Intel</h2>
+            <div className="flex items-center space-x-4">
+              <div className="h-[1px] w-12 bg-tertiary"></div>
+              <span className="text-label-caps font-label-caps text-tertiary tracking-widest">EVENT CALENDAR</span>
+            </div>
+          </div>
+          <button onClick={() => window.dispatchEvent(new Event('open-master-calendar'))} className="mt-6 md:mt-0 bg-primary text-on-primary px-6 py-3 text-label-caps font-label-caps rounded-sm hover:bg-surface-tint transition-colors flex items-center space-x-2 shadow-sm">
+            <span>EXECUTE MASTER VIEW</span>
+            <span className="material-symbols-outlined text-sm">open_in_new</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Calendar (Mockup) */}
+          <div className="lg:col-span-1 bg-background rounded-lg border border-outline-variant p-6 h-fit shadow-sm">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-headline-md font-headline-md text-on-surface">May 2026</h3>
+              <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" onClick={() => window.dispatchEvent(new Event('open-master-calendar'))}>open_in_new</span>
+            </div>
+            <div className="grid grid-cols-7 gap-2 text-center text-label-caps font-label-caps text-on-surface-variant mb-4">
+              <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+            </div>
+            <div className="grid grid-cols-7 gap-2 text-center text-body-sm font-body-md text-on-surface">
+              <div className="p-2 text-outline">26</div><div className="p-2 text-outline">27</div><div className="p-2 text-outline">28</div><div className="p-2 text-outline">29</div><div className="p-2 text-outline">30</div>
+              {Array.from({ length: 31 }).map((_, i) => {
+                const day = i + 1;
+                const dayEvents = events.filter(e => e.day === day);
+                const isSelected = selectedDate === day;
+                const hasEvent = dayEvents.length > 0;
+                
+                let dayClasses = "p-2 cursor-pointer hover:bg-surface-variant rounded-full transition-colors";
+                if (isSelected) dayClasses = "p-2 rounded-full bg-primary-container text-on-primary-container font-semibold shadow-sm";
+                else if (hasEvent) dayClasses = "p-2 rounded-full bg-surface-variant text-on-surface font-semibold";
+                
                 return (
-                <Link
-                  key={card.id}
-                  to={card.path}
-                  className={`group relative overflow-hidden rounded-[20px] ${bgColor} border-[4px] border-black p-8 md:p-10 flex flex-col justify-between min-h-[460px] cursor-pointer shadow-neo hover:-translate-y-2 hover:shadow-neo-hover transition-all duration-300`}
-                >
-                  {/* Watermark Icon */}
-                  <div className="absolute top-1/4 right-[-10%] p-8 opacity-20 group-hover:opacity-30 group-hover:rotate-12 transition-all duration-500 group-hover:scale-110 transform origin-center pointer-events-none text-black">
-                    <span className={`material-symbols-outlined text-[240px] font-black`}>{card.bgIcon}</span>
+                  <div 
+                    key={day} 
+                    onClick={() => {
+                       if(hasEvent) setSelectedDate(day);
+                       else window.dispatchEvent(new Event('open-master-calendar'));
+                    }}
+                    className={dayClasses}
+                  >
+                    {day}
                   </div>
-
-                  {/* Content Hub */}
-                  <div className="relative z-10 flex flex-col h-full">
-                    <div className="size-14 rounded-xl flex items-center justify-center mb-auto border-[3px] border-black bg-white text-black shadow-neo-sm group-hover:scale-110 transition-transform">
-                      <span className="material-symbols-outlined text-2xl font-black">{card.icon}</span>
-                    </div>
-                    
-                    <div className="mt-8 transition-transform duration-500 group-hover:translate-y-[-5px]">
-                      <h3 className="text-3xl lg:text-4xl font-black mb-4 uppercase tracking-tighter text-black">{card.title}</h3>
-                      <p className="text-black font-bold text-sm mb-8 line-clamp-3">{card.description}</p>
-                      
-                      <div className="flex items-center gap-4 border-t-[3px] border-black pt-6">
-                        <span className="text-[10px] font-black tracking-[0.2em] uppercase text-black">
-                          Deploy Module
-                        </span>
-                        <div className="size-8 rounded-full bg-white border-[3px] border-black text-black flex items-center justify-center shadow-neo-sm group-hover:bg-black group-hover:text-white transition-colors">
-                          <span className="material-symbols-outlined text-sm font-black">arrow_forward</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
                 );
               })}
             </div>
-
-            {/* NEO-BRUTALIST INTERACTIVE DASHBOARD CALENDAR */}
-            <section className="mb-12 p-8 md:p-12 bg-white border-[4px] border-black rounded-[20px] shadow-neo relative overflow-hidden group">
-              
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 relative z-10">
-                <div>
-                  <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-black mb-2 uppercase">Global Intel</h2>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-1 bg-black"></div>
-                    <p className="text-xs font-black text-black tracking-[0.3em] uppercase">Event Calendar</p>
-                  </div>
-                </div>
-                
-                <div className="flex gap-4">
-                  <button onClick={() => setShowMasterCalendar(true)} className="px-8 py-3 rounded-xl bg-white border-[3px] border-black text-black font-black text-[10px] tracking-[0.2em] uppercase hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover shadow-neo-sm active:scale-95 transition-all">
-                    Execute Master View
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid lg:grid-cols-3 gap-16 relative z-10">
-                {/* Visual Interactive Month Grid */}
-                <div className="lg:col-span-1 border-[3px] border-black p-6 rounded-[20px] bg-white shadow-neo-sm">
-                  <div className="flex items-center justify-between mb-8 pb-4 border-b-[3px] border-black cursor-pointer group-hover:border-black max-w-[300px]" onClick={() => setShowMasterCalendar(true)}>
-                     <h3 className="text-2xl font-black text-black uppercase tracking-tighter">May 2026</h3>
-                     <span className="material-symbols-outlined text-black font-black">open_in_new</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-7 gap-3 max-w-[300px]">
-                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, index) => (
-                      <div key={index} className="text-center text-[10px] font-black text-black py-2 uppercase">{d}</div>
-                    ))}
-                    {Array.from({ length: 35 }).map((_, i) => {
-                      const daysInMonth = 31;
-                      const day = i - 4; 
-                      const isCurrentMonth = day > 0 && day <= daysInMonth;
-                      const dayEvents = isCurrentMonth ? events.filter(e => e.day === day) : [];
-                      const hasEvent = dayEvents.length > 0;
-                      const isSelected = selectedDate === day;
-                      
-                      return (
-                        <div 
-                          key={i} 
-                          onClick={() => {
-                            if(isCurrentMonth) {
-                              if(hasEvent) setSelectedDate(day);
-                              else setShowMasterCalendar(true); // Pop open the master calendar for deep browsing
-                            }
-                          }}
-                          className={`aspect-square flex flex-col items-center justify-center rounded-xl text-xs font-bold transition-all
-                            ${!isCurrentMonth ? 'text-transparent cursor-default pointer-events-none' : 'text-black hover:bg-black hover:text-white cursor-pointer border-[2px] border-transparent'}
-                            ${hasEvent ? 'bg-[#ffde00] border-[2px] border-black shadow-neo-sm font-black' : ''}
-                            ${isSelected ? 'bg-black text-white shadow-neo-sm scale-110 z-10' : ''}
-                          `}
-                        >
-                          {isCurrentMonth ? day : ''}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Event Sidebar Details */}
-                <div className="lg:col-span-2 flex flex-col h-full pl-0 lg:pl-16">
-                  <div className="flex items-center justify-between mb-8">
-                     <h3 className="text-[10px] font-black text-black tracking-[0.3em] uppercase">
-                        {selectedDate ? `Telemetry Log: MAY ${selectedDate}` : 'Upcoming Architecture'}
-                     </h3>
-                     {selectedDate && (
-                        <button onClick={() => setSelectedDate(null)} className="text-[10px] font-black tracking-wider uppercase text-black hover:bg-gray-100 px-3 py-1 rounded-md transition-colors">
-                          Clear Target
-                        </button>
-                     )}
-                  </div>
-                  
-                  <div className="flex-1 flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar max-h-[360px]">
-                    {events.filter(e => selectedDate ? e.day === selectedDate : true).length === 0 ? (
-                      <div className="flex-1 border-[3px] border-dashed border-black rounded-[20px] flex flex-col items-center justify-center p-12 bg-white">
-                         <span className="material-symbols-outlined text-4xl text-black mb-4 font-black">radar</span>
-                         <p className="text-black font-black uppercase tracking-[0.2em] text-[10px]">No events detected.</p>
-                      </div>
-                    ) : (
-                      events
-                      .filter(e => selectedDate ? e.day === selectedDate : true)
-                      .slice(0, selectedDate ? undefined : 4)
-                      .map((ev, i) => (
-                        <div key={ev.id || i} onClick={() => setViewingEvent(ev)} className="group flex flex-col sm:flex-row sm:items-center gap-6 p-6 rounded-[20px] bg-white border-[3px] border-black hover:bg-yellow-100 cursor-pointer shadow-neo-sm hover:-translate-y-1 hover:shadow-neo-hover transition-all duration-300">
-                          
-                          <div className="w-20 shrink-0 flex flex-col justify-center border-l-[4px] border-black pl-4">
-                            <span className="text-black font-black text-2xl tracking-tighter leading-none mb-1">{ev.date.split(' ')[1]}</span>
-                            <span className="text-black text-[10px] font-black tracking-[0.2em] uppercase">{ev.date.split(' ')[0]}</span>
-                          </div>
-                          
-                          <div className="flex-1 flex flex-col justify-center">
-                            <div className="flex flex-wrap items-center gap-3 mb-2">
-                              <span className="px-2.5 py-1 rounded-md bg-white border-[2px] border-black text-black text-[9px] font-black tracking-widest uppercase shadow-neo-sm">{ev.type || 'Event'}</span>
-                              <span className="text-black text-[10px] font-black tracking-widest uppercase">{ev.org || 'System Core'}</span>
-                            </div>
-                            <h4 className="text-lg font-black text-black tracking-tighter uppercase leading-tight line-clamp-1">{ev.title}</h4>
-                          </div>
-                          
-                          <div className="shrink-0 size-12 rounded-full border-[3px] border-black bg-white text-black flex items-center justify-center shadow-neo-sm group-hover:bg-black group-hover:text-white transition-all">
-                            <span className="material-symbols-outlined text-sm font-black">visibility</span>
-                          </div>
-
-                        </div>
-                      ))
-                    )}
-
-                    {!selectedDate && events.length > 4 && (
-                      <button onClick={() => setShowMasterCalendar(true)} className="mt-4 py-5 text-[10px] font-black tracking-[0.2em] uppercase text-black bg-white hover:bg-yellow-100 transition-all text-center w-full border-[3px] border-black rounded-[20px] shadow-neo-sm hover:-translate-y-1 hover:shadow-neo-hover">
-                         Load Full Event Calendar ({events.length} Modules)
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </section>
           </div>
-      </main>
 
-      {/* MASTER UNIFIED CALENDAR OVERLAY */}
-      {showMasterCalendar && (
-        <div className="fixed inset-0 z-[200] bg-[#0a0a0a]/95 backdrop-blur-3xl flex flex-col p-4 md:p-12 lg:p-16 overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
-          <div className="max-w-[1400px] w-full mx-auto relative flex flex-col h-full bg-[#111] border border-[#333] rounded-[40px] shadow-[0_0_100px_rgba(0,0,0,0.9)] overflow-hidden">
-            
-            {/* Overlay Header */}
-            <header className="px-10 py-8 border-b border-[#222] flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#0a0a0a]">
-              <div>
-                <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-white mb-2 uppercase">Unified Calendar</h2>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-1 bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                  <p className="text-xs font-bold text-slate-400 tracking-[0.2em] uppercase">All Nodes & Divisions</p>
-                </div>
-              </div>
-              <button onClick={() => setShowMasterCalendar(false)} className="absolute top-8 right-10 size-12 rounded-full bg-[#222] hover:bg-red-600 border border-[#444] hover:border-red-500 text-white flex items-center justify-center transition-all group z-50">
-                <span className="material-symbols-outlined text-lg group-hover:rotate-90 transition-transform">close</span>
-              </button>
-            </header>
-
-            {/* Filter Hub */}
-            <div className="px-10 py-6 border-b border-[#222] bg-[#111] flex overflow-x-auto custom-scrollbar gap-4">
-              {['All', 'Technical', 'Cultural', 'Sports', 'Summit', 'Workshop'].map(cat => (
-                <button 
-                  key={cat} onClick={() => setCalendarFilter(cat)}
-                  className={`px-6 py-2.5 rounded-full text-[10px] font-black tracking-widest uppercase whitespace-nowrap transition-all border ${calendarFilter === cat ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'bg-[#0a0a0a] text-slate-400 border-[#333] hover:border-slate-400 hover:text-white'}`}
-                >
-                  {cat} Calendar
-                </button>
-              ))}
-            </div>
-
-            {/* Event List / Detail Expansion */}
-            <div className="flex-1 overflow-y-auto p-10 bg-[#0a0a0a] custom-scrollbar grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-               {filteredMasterEvents.length === 0 ? (
-                 <div className="col-span-full py-32 flex flex-col items-center text-center">
-                    <span className="material-symbols-outlined text-[80px] text-slate-800 mb-6">event_busy</span>
-                    <h3 className="text-2xl font-black uppercase tracking-tighter text-slate-600">No telemetry recorded</h3>
-                    <p className="text-sm font-medium text-slate-500 mt-2">Try adjusting the databank filters.</p>
-                 </div>
-               ) : (
-                 filteredMasterEvents.map((ev, idx) => (
-                    <div key={ev.id || idx} className="bg-[#111] border border-[#222] hover:border-white/30 rounded-[32px] p-8 flex flex-col group transition-all hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                      <div className="flex justify-between items-start mb-6">
-                        <div className="flex flex-col border-l-2 border-red-600 pl-4">
-                          <span className="text-white font-black text-3xl tracking-tighter leading-none mb-1">{ev.date.split(' ')[1]}</span>
-                          <span className="text-slate-500 text-[10px] font-black tracking-[0.2em] uppercase">{ev.date.split(' ')[0]} 2026</span>
-                        </div>
-                        <span className="material-symbols-outlined text-slate-600 group-hover:text-white transition-colors text-3xl">event</span>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 mb-4">
-                        <span className="px-3 py-1 rounded-md bg-[#222] text-white text-[9px] font-black tracking-widest uppercase border border-[#333]">{ev.type || 'System Event'}</span>
-                        <span className="text-slate-400 text-[10px] font-black tracking-widest uppercase bg-[#0a0a0a] px-3 py-1 rounded-md border border-[#222]">{ev.org || 'Global'}</span>
-                      </div>
-                      <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-4 line-clamp-2">{ev.title}</h3>
-                      <p className="text-sm text-slate-400 font-medium leading-relaxed mb-8 flex-1">{ev.description || "Details rendering. Check back momentarily for comprehensive event structure."}</p>
-                      
-                      <button onClick={() => setViewingEvent(ev)} className="w-full py-4 rounded-xl bg-[#222] hover:bg-white hover:text-black text-[10px] font-black tracking-[0.2em] text-white uppercase transition-all mt-auto flex items-center justify-center gap-3 border border-[#333]">
-                        Expand File <span className="material-symbols-outlined text-sm">open_in_new</span>
-                      </button>
-                    </div>
-                 ))
+          {/* Event List */}
+          <div className="lg:col-span-2 space-y-4 flex flex-col">
+            <div className="flex justify-between items-center mb-6 border-b border-tertiary/20 pb-2">
+               <div className="text-label-caps font-label-caps text-tertiary">UPCOMING ARCHITECTURE</div>
+               {selectedDate && (
+                 <button onClick={() => setSelectedDate(null)} className="text-[10px] font-label-caps text-error hover:underline uppercase">Clear Filter</button>
                )}
             </div>
+            
+            <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-2">
+              {events.filter(e => selectedDate ? e.day === selectedDate : true).length === 0 ? (
+                <div className="p-12 text-center border border-dashed border-outline-variant rounded-lg">
+                   <p className="text-on-surface-variant font-label-caps">No events found.</p>
+                </div>
+              ) : (
+                events.filter(e => selectedDate ? e.day === selectedDate : true).slice(0, selectedDate ? undefined : 4).map((ev, i) => (
+                  <div key={ev.id || i} onClick={() => setViewingEvent(ev)} className="flex items-center justify-between p-6 bg-background rounded-lg border border-outline-variant hover:border-tertiary transition-colors group cursor-pointer shadow-sm">
+                    <div className="flex items-center space-x-6">
+                      <div className="text-center pr-6 border-r border-outline-variant group-hover:border-tertiary/50 transition-colors">
+                        <div className="text-headline-md font-headline-md text-primary">{String(ev.day).padStart(2, '0')}</div>
+                        <div className="text-label-caps font-label-caps text-on-surface-variant">MAY</div>
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2 mb-1">
+                          <span className="px-2 py-0.5 rounded-full border border-tertiary/30 bg-tertiary/5 text-tertiary text-[10px] font-label-caps font-semibold uppercase">{ev.type || 'Event'}</span>
+                          <span className="text-label-caps font-label-caps text-on-surface-variant uppercase">{ev.org || 'System'}</span>
+                        </div>
+                        <h4 className="text-body-lg font-body-lg text-on-surface font-medium">{ev.title}</h4>
+                      </div>
+                    </div>
+                    <button className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary group-hover:border-primary transition-all">
+                      <span className="material-symbols-outlined text-sm">visibility</span>
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
-      )}
-
-      {/* Footer */}
-      <footer className="mt-auto px-10 py-8 border-t border-[#222] bg-[#0a0a0a] relative z-20">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-slate-600 font-black uppercase tracking-[0.3em]">© 2026 TRIBE ECOSYSTEM. ALL SYSTEMS OPERATIONAL.</span>
-          </div>
-          <div className="flex gap-8 text-[10px] font-black text-slate-600 uppercase tracking-widest">
-            <span className="hover:text-white cursor-pointer transition-colors">Privacy</span>
-            <span className="hover:text-white cursor-pointer transition-colors">Protocol</span>
-            <span className="hover:text-white cursor-pointer transition-colors">Support</span>
-          </div>
-        </div>
-      </footer>
+      </section>
 
       {showEventModal && <EventModal onClose={() => setShowEventModal(false)} onSave={handleSaveEvent} initialData={editingEvent} />}
       {viewingEvent && <EventDetailDrawer event={viewingEvent} onClose={() => setViewingEvent(null)} />}
       {showDiscoveryAssistant && <ClubDiscoveryAssistant onClose={() => setShowDiscoveryAssistant(false)} />}
-      
-      {showProfileModal && (
-        <div className="fixed inset-0 z-[700] bg-[#0a0a0a]/95 backdrop-blur-2xl flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-300 overflow-y-auto custom-scrollbar">
-          <div className="absolute top-8 right-8 z-[710]">
-            <button onClick={() => setShowProfileModal(false)} className="size-12 rounded-full bg-[#111] hover:bg-white text-slate-400 hover:text-black border border-[#333] flex items-center justify-center transition-all group shadow-[0_0_20px_rgba(0,0,0,0.8)]">
-              <span className="material-symbols-outlined text-lg group-hover:rotate-90 transition-transform">close</span>
-            </button>
-          </div>
-          <div className="w-full max-w-[1000px] my-auto bg-[#111] border border-[#222] rounded-[32px] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] relative">
-            <ProfilePanel accentColorClass="text-red-500" accentBgClass="bg-red-500" />
-          </div>
-        </div>
-      )}
-    </div>
+    </SidebarLayout>
   );
 };
 

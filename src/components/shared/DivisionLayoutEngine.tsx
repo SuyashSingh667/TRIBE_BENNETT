@@ -19,107 +19,90 @@ export const DivisionLayoutEngine: React.FC<{ config: DivisionConfig; clubs: any
   const navigate = useNavigate();
 
   return (
-    <div className="bg-[#fdfaf6] min-h-screen text-black font-display relative overflow-hidden">
+    <div className="bg-background min-h-screen text-on-surface font-body-md relative overflow-hidden flex flex-col w-full">
       
       {/* =========================================================
-          COMMAND CENTER HERO
+          COMMAND CENTER HERO (M3 Style)
       ========================================================= */}
-      <section className="relative pt-24 pb-20 px-8 md:px-16 border-b-[4px] border-black bg-white">
-         
-         <div className="absolute inset-0 z-0 opacity-10 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
-
-         <div className="max-w-[1400px] mx-auto relative z-10 flex flex-col items-center md:items-start text-center md:text-left">
-           
-           <div className={`flex items-center gap-4 mb-6`}>
-             <div className="size-4 bg-[#a1ff00] border-[3px] border-black animate-pulse" />
-             <span className="text-[10px] font-black uppercase tracking-[0.4em] px-3 py-1 bg-white border-[3px] border-black shadow-neo-sm text-black">
-               Command Center Sync Active
-             </span>
-           </div>
-
-           <h1 className="text-7xl md:text-[100px] lg:text-[140px] leading-[0.8] font-black tracking-tighter uppercase text-black mb-8 group hover:scale-[1.01] transition-transform duration-700 origin-left drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">
-             {config.title}
-           </h1>
-           
-           <p className="text-2xl md:text-3xl font-black text-black uppercase tracking-tight mb-4 flex flex-wrap justify-center md:justify-start gap-3">
-              {config.subtitle.split(' ').map((word, i) => {
-                const colors = ['bg-[#ffde00]', 'bg-[#ff90e8]', 'bg-[#a1ff00]', 'bg-white'];
-                return (
-                  <span key={i} className={`${colors[i % colors.length]} text-black px-3 py-1 border-[3px] border-black shadow-neo-sm`}>{word}</span>
-                );
-              })}
-           </p>
-
-           <p className="text-sm font-bold text-gray-700 max-w-xl mb-12 border-l-[4px] border-black pl-4">
-             "{config.description}"
-           </p>
-
-           {/* Live Division Metrics */}
-           <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 w-full border-[4px] border-black rounded-2xl shadow-neo transition-shadow duration-700 overflow-hidden">
-              {config.metrics.map((stat, i) => {
-                 const statColors = ['bg-[#ffde00]', 'bg-[#ff90e8]', 'bg-[#a1ff00]', 'bg-white'];
-                 return (
-                   <div key={i} className={`flex flex-col p-6 ${i!==3 ? 'border-r-[4px] border-black' : ''} ${i<2 ? 'border-b-[4px] lg:border-b-0 border-black' : ''} ${statColors[i % statColors.length]} hover:opacity-80 transition-opacity`}>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-black mb-2">{stat.l}</span>
-                      <span className="text-3xl font-black text-black">{stat.v}</span>
-                   </div>
-                 );
-              })}
-           </div>
-         </div>
+      <section className="relative w-full min-h-[600px] flex items-center justify-center text-center shadow-md animate-in fade-in duration-700 pt-12 pb-24">
+        <div className="absolute inset-0 z-0">
+          <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCBW8jvhVZGleZvJTRJzQ7Y1L7Rh4oMM-5YmO47bxFQ4tDXDFmVsvKO--Q7EYMYMTVry9SPoGys5uMmZJb5WzhDxk171fqNH_6ou9YvnysTeYQc_I-XnqKwx3j2gaxYKYJYpbIsSLnbOw66Vq_zARZY0fnzFM2MrgfvC-mFEICo6061sE2VAA70zaZ8FYJWnv1H7lyU3w4XccXwLeQ2dZnrZSvrAJVXbdeUjjddRgHuUyNLYUm9PZwEmTcRblCwvFYordc')", backgroundPosition: 'center 30%' }}></div>
+          <div className="absolute inset-0 bg-primary/30 mix-blend-multiply"></div>
+          <div className="texture-overlay"></div>
+        </div>
+        
+        <div className="relative z-10 px-6 py-12 bg-background/80 backdrop-blur-sm border border-outline-variant rounded-lg max-w-4xl shadow-xl mx-4 mt-12 flex flex-col items-center">
+          <div className="flex items-center justify-center space-x-4 mb-6">
+            <div className="h-[1px] w-12 bg-tertiary"></div>
+            <span className="text-label-caps font-label-caps text-tertiary tracking-widest uppercase">{config.subtitle}</span>
+            <div className="h-[1px] w-12 bg-tertiary"></div>
+          </div>
+          
+          <h1 className="text-headline-lg-mobile md:text-[80px] leading-none font-headline-xl text-primary mb-6 uppercase text-center">
+            {config.title}
+          </h1>
+          
+          <p className="text-body-lg font-body-lg text-on-surface-variant max-w-2xl mx-auto italic mb-12">
+            "{config.description}"
+          </p>
+          
+          {/* Live Division Metrics */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+            {config.metrics.map((stat, i) => (
+              <div key={i} className="flex flex-col p-4 bg-surface/50 border border-outline-variant/50 rounded-lg hover:bg-surface transition-colors duration-300 backdrop-blur-md">
+                <span className="text-label-caps font-label-caps text-tertiary mb-2">{stat.l}</span>
+                <span className="text-headline-md font-headline-md text-primary">{stat.v}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* =========================================================
-          SQUAD / DIVISION GRID
+          SQUAD / DIVISION GRID (M3 Style)
       ========================================================= */}
-      <section className="py-24 px-8 md:px-16 max-w-[1400px] mx-auto relative z-10">
+      <section className="py-24 px-6 md:px-margin-desktop max-w-[1400px] mx-auto relative z-10 w-full">
         
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
-          <div>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-4 h-10 border-[3px] border-black bg-black shadow-neo-sm"></div>
-              <h2 className="text-4xl lg:text-5xl font-black uppercase tracking-tighter text-black">{config.gridTitle}</h2>
-            </div>
-            <p className="text-black font-bold max-w-xl text-sm">
-              {config.gridSubtitle}
-            </p>
+        <div className="flex flex-col items-center text-center mb-16">
+          <div className="flex items-center space-x-4 mb-6">
+            <div className="h-[1px] w-12 bg-tertiary"></div>
+            <span className="text-label-caps font-label-caps text-tertiary tracking-widest uppercase">{config.gridSubtitle}</span>
+            <div className="h-[1px] w-12 bg-tertiary"></div>
           </div>
+          <h2 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-primary">{config.gridTitle}</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-           {clubs.map((club, i) => {
-             return (
-               <div 
-                 key={i} 
-                 onClick={() => navigate(`/clubs/${encodeURIComponent(club.name.toLowerCase().replace(/\s+/g, '-'))}?type=${config.id}`)}
-                 className="group relative h-[420px] bg-white rounded-2xl overflow-hidden border-[4px] border-black shadow-neo transition-all duration-300 flex flex-col cursor-pointer hover:-translate-y-2 hover:shadow-neo-hover"
-               >
-                  <div className="w-full h-1/2 bg-black border-b-[4px] border-black overflow-hidden relative shrink-0">
-                    <img src={club.image} alt={club.name} className="w-full h-full object-contain p-4 grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
+           {clubs.map((club, i) => (
+             <div 
+               key={i} 
+               onClick={() => navigate(`/clubs/${encodeURIComponent(club.name.toLowerCase().replace(/\s+/g, '-'))}?type=${config.id}`)}
+               className="group relative h-[420px] arch-card gold-border overflow-hidden bg-surface flex flex-col cursor-pointer hover:-translate-y-2 hover:shadow-xl transition-all duration-300"
+             >
+                <div className="w-full h-[55%] relative shrink-0 overflow-hidden">
+                  <div className="absolute inset-0 bg-primary/20 mix-blend-multiply z-10 group-hover:bg-transparent transition-colors duration-500"></div>
+                  <img src={club.image} alt={club.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                </div>
+                
+                <div className="relative z-20 p-6 flex flex-col flex-1 bg-surface border-t border-tertiary/20">
+                  <div className="size-12 rounded-full bg-background border border-tertiary flex items-center justify-center shadow-sm absolute -top-6 left-1/2 -translate-x-1/2 z-20 text-primary group-hover:scale-110 transition-transform">
+                     <span className="material-symbols-outlined">{club.icon || config.iconFallback}</span>
+                  </div>
+
+                  <div className="text-center mt-6">
+                    <h3 className="text-headline-sm font-headline-md text-on-surface uppercase tracking-tight mb-2">{club.name}</h3>
+                    <p className="text-body-sm font-body-md text-on-surface-variant line-clamp-3">
+                      {club.description}
+                    </p>
                   </div>
                   
-                  <div className="relative z-10 p-6 pt-10 flex flex-col flex-1 pointer-events-none">
-                    <div className="size-14 rounded-xl bg-white border-[4px] border-black flex items-center justify-center shadow-neo-sm absolute -top-7 left-6 z-20">
-                       <span className="material-symbols-outlined text-black font-black">{club.icon || config.iconFallback}</span>
-                    </div>
-
-                    <div>
-                      <h3 className="text-2xl font-black text-black uppercase tracking-tighter leading-none mb-2">{club.name}</h3>
-                      <p className="text-xs font-bold text-gray-700 line-clamp-3 mb-4">
-                        {club.description}
-                      </p>
-                    </div>
-                    
-                    <div className="mt-auto flex items-center justify-between pt-4">
-                       <span className="text-[10px] font-black tracking-widest uppercase text-black bg-white px-3 py-1 rounded-lg border-[3px] border-black shadow-neo-sm">
-                         {club.members || '10+'} Ops
-                       </span>
-                       <span className="material-symbols-outlined text-black font-black bg-white border-[3px] border-black rounded-lg p-1 shadow-neo-sm group-hover:bg-black group-hover:text-white transition-colors">arrow_forward</span>
-                    </div>
+                  <div className="mt-auto flex items-center justify-center pt-4 text-tertiary font-label-caps text-label-caps group-hover:text-primary transition-colors">
+                     <span className="tracking-widest uppercase">{club.members || '10+'} Ops</span>
+                     <span className="material-symbols-outlined text-sm ml-2">arrow_forward</span>
                   </div>
-               </div>
-             );
-           })}
+                </div>
+             </div>
+           ))}
         </div>
       </section>
     </div>

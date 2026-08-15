@@ -165,7 +165,9 @@ export const mockData = {
       ],
       upcomingEvents: [
         { title: "Starters 120 Coding Contest", date: "May 20" },
-        { title: "Algorithm Workshop series", date: "May 24" }
+        { title: "Algorithm Workshop series", date: "May 24" },
+        { title: "Dynamic Programming Bootcamp", date: "May 26" },
+        { title: "Graph Theory Masterclass", date: "May 28" }
       ]
     },
     {
@@ -174,7 +176,10 @@ export const mockData = {
       members: 140,
       icon: "code",
       gradientClass: "from-slate-600 to-slate-900",
-      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop",
+      upcomingEvents: [
+        { title: "LeetCode Daily Sync", date: "May 03" }
+      ]
     },
     {
       name: "Robotics Society",
@@ -182,7 +187,10 @@ export const mockData = {
       members: "185",
       icon: "smart_toy",
       gradientClass: "from-slate-600 to-slate-900",
-      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=2670&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=2670&auto=format&fit=crop",
+      upcomingEvents: [
+        { title: "Line Follower Challenge", date: "May 07" }
+      ]
     },
     {
       name: "AI/ML Group",
@@ -190,7 +198,10 @@ export const mockData = {
       members: "312",
       icon: "psychology",
       gradientClass: "from-slate-600 to-slate-900",
-      image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2670&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2670&auto=format&fit=crop",
+      upcomingEvents: [
+        { title: "Neural Networks Intro", date: "May 09" }
+      ]
     },
     {
       name: "Cyber Security",
@@ -198,7 +209,10 @@ export const mockData = {
       members: "145",
       icon: "lock",
       gradientClass: "from-slate-600 to-slate-900",
-      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop",
+      upcomingEvents: [
+        { title: "Capture The Flag", date: "May 13" }
+      ]
     },
     {
       name: "Open Source",
@@ -206,7 +220,10 @@ export const mockData = {
       members: "402",
       icon: "terminal",
       gradientClass: "from-slate-600 to-slate-900",
-      image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2670&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2670&auto=format&fit=crop",
+      upcomingEvents: [
+        { title: "Hacktoberfest Prep", date: "May 15" }
+      ]
     },
     {
       name: "Cloud Tech",
@@ -214,7 +231,10 @@ export const mockData = {
       members: "156",
       icon: "cloud",
       gradientClass: "from-slate-600 to-slate-900",
-      image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=2670&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=2670&auto=format&fit=crop",
+      upcomingEvents: [
+        { title: "AWS DeepRacer Event", date: "May 17" }
+      ]
     },
     {
       name: "Data Science",
@@ -222,7 +242,10 @@ export const mockData = {
       members: 300,
       icon: "database",
       gradientClass: "from-slate-500 to-slate-800",
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2670&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2670&auto=format&fit=crop",
+      upcomingEvents: [
+        { title: "Kaggle Hackathon", date: "May 21" }
+      ]
     },
     {
       name: "Blockchain",
@@ -230,7 +253,10 @@ export const mockData = {
       members: "94",
       icon: "currency_bitcoin",
       gradientClass: "from-amber-600 to-yellow-900",
-      image: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=2669&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=2669&auto=format&fit=crop",
+      upcomingEvents: [
+        { title: "Web3 Smart Contracts", date: "May 23" }
+      ]
     },
     {
       name: "IoT Lab",
@@ -238,7 +264,10 @@ export const mockData = {
       members: "122",
       icon: "settings_input_component",
       gradientClass: "from-slate-600 to-slate-900",
-      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2670&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2670&auto=format&fit=crop",
+      upcomingEvents: [
+        { title: "Raspberry Pi Workshop", date: "May 27" }
+      ]
     },
     {
       name: "AR/VR Studio",
@@ -246,7 +275,10 @@ export const mockData = {
       members: "68",
       icon: "view_in_ar",
       gradientClass: "from-indigo-600 to-purple-800",
-      image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=2670&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=2670&auto=format&fit=crop",
+      upcomingEvents: [
+        { title: "Metaverse Design", date: "May 29" }
+      ]
     }
   ],
   sportsClubs: [

@@ -68,23 +68,23 @@ export const ClubCriteriaMatrix: React.FC<ClubCriteriaMatrixProps> = ({ clubName
   }
 
   return (
-    <div className="relative pt-8 pb-8 z-10 font-display">
-      <div className="absolute left-[24px] md:left-[39px] top-12 bottom-8 w-1 bg-black z-0" />
+    <div className="relative py-8 z-10 font-body-md w-full">
+      <div className="absolute left-[24px] md:left-[39px] top-12 bottom-8 w-[1px] bg-outline-variant z-0" />
       <div className="flex flex-col gap-6 md:gap-10 relative z-10 w-full">
         {criteria.map((s, i) => (
           <div key={i} className="flex gap-4 md:gap-8 items-start group">
-            <div className="w-12 h-12 md:w-20 md:h-20 shrink-0 bg-[#a1ff00] border-[4px] border-black rounded-xl md:rounded-2xl flex flex-col items-center justify-center transition-all shadow-neo-sm relative z-10 group-hover:-translate-y-1 group-hover:shadow-neo">
-              <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-black">S-{i+1}</span>
+            <div className="w-12 h-12 md:w-20 md:h-20 shrink-0 bg-surface border border-tertiary rounded-full flex flex-col items-center justify-center transition-all shadow-sm relative z-10 group-hover:scale-105 group-hover:bg-tertiary/10">
+              <span className="text-[10px] md:text-xs font-label-caps text-tertiary">STEP {i+1}</span>
             </div>
             
-            <div className="flex flex-col p-6 rounded-[24px] bg-white border-[4px] border-black w-full transition-all group-hover:-translate-y-1 shadow-neo-sm group-hover:shadow-neo">
+            <div className="flex flex-col p-6 md:p-8 rounded-2xl bg-surface border border-outline-variant w-full transition-all group-hover:-translate-y-1 shadow-sm group-hover:shadow-md">
                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                 <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-black">{s.title}</h3>
-                 <span className="text-[10px] font-black uppercase tracking-widest text-black bg-pink-400 border-[3px] border-black px-3 py-1.5 rounded-lg w-fit whitespace-nowrap shadow-neo-sm">
-                   Req: {s.req}
+                 <h3 className="text-xl md:text-2xl font-headline-md text-primary tracking-tight">{s.title}</h3>
+                 <span className="text-xs font-label-caps text-tertiary bg-tertiary/10 border border-tertiary/30 px-3 py-1.5 rounded-full w-fit whitespace-nowrap">
+                   {s.req}
                  </span>
                </div>
-               <p className="text-sm font-bold text-gray-800 leading-relaxed border-l-[4px] border-black pl-4">{s.desc}</p>
+               <p className="text-sm font-body-md text-on-surface-variant leading-relaxed border-l-[2px] border-tertiary pl-4 italic">"{s.desc}"</p>
             </div>
           </div>
         ))}

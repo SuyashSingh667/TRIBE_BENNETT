@@ -115,3 +115,84 @@ export function getApplications(clubName: string): ClubApplication[] {
     return [];
   }
 }
+
+export interface TribeEvent {
+  id?: string;
+  date: string;
+  day: number;
+  month?: number;
+  year?: number;
+  time?: string;
+  title: string;
+  org?: string;
+  type?: string;
+  description?: string;
+}
+
+export function getCollisionFreeMasterEvents(): TribeEvent[] {
+  let combined: TribeEvent[] = [...(mockData.globalEvents || [])];
+  
+  const processClubs = (clubs: any[], type: string) => {
+    if (!clubs) return;
+    clubs.forEach((club: any) => {
+      if (club.upcomingEvents) {
+        club.upcomingEvents.forEach((ev: any) => {
+          const match = ev.date?.match(/(\w+)\s+(\d+)/);
+          if (match) {
+            combined.push({
+              id: `${type.toLowerCase()}-${club.name}-${match[2]}-${ev.title.replace(/\s+/g, '')}`,
+              title: ev.title,
+              org: club.name,
+              type: type,
+              date: `MAY ${match[2]}`,
+              day: parseInt(match[2]),
+              month: 5,
+              year: 2026,
+              description: `${club.name} is hosting ${ev.title}. Join the community to participate.`
+            });
+          }
+        });
+      }
+    });
+  };
+
+  processClubs(mockData.culturalClubs, 'Cultural');
+  processClubs(mockData.technicalClubs, 'Technical');
+  processClubs(mockData.sportsClubs, 'Sports');
+
+  // Sort initially to process in order
+  combined.sort((a,b) => a.day - b.day);
+
+  let finalEvents: TribeEvent[] = [];
+  let occupiedDates = new Set<string>();
+
+  combined.forEach(ev => {
+     let currentDay = ev.day;
+     let currentMonth = ev.month || 5;
+     
+     // Resolve collision by finding the next available date
+     while (occupiedDates.has(`${currentMonth}-${currentDay}`)) {
+        currentDay++;
+        if (currentDay > 31) {
+           currentDay = 1;
+           currentMonth++;
+        }
+     }
+     occupiedDates.add(`${currentMonth}-${currentDay}`);
+     
+     const formattedDay = currentDay.toString().padStart(2, '0');
+     const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+     const monthName = monthNames[currentMonth - 1] || 'MAY';
+     
+     ev.day = currentDay;
+     ev.month = currentMonth;
+     ev.date = `${monthName} ${formattedDay}`;
+     
+     finalEvents.push(ev);
+  });
+
+  return finalEvents.sort((a,b) => {
+    if (a.month !== b.month) return (a.month || 0) - (b.month || 0);
+    return a.day - b.day;
+  });
+}

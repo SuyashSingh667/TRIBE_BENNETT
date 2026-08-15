@@ -1,48 +1,78 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply font-sans antialiased overflow-x-hidden m-0 p-0 bg-[#fdfaf6] text-black;
-  }
-  .theme {
-    --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
-  }
-  :root {
-    --background: oklch(0.98 0.01 90); /* off-white cream */
-    --foreground: oklch(0 0 0); /* black */
-    --card: oklch(1 0 0); /* white */
-    --card-foreground: oklch(0 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0 0 0);
-    --primary: oklch(0.9 0.2 100); /* yellow */
-    --primary-foreground: oklch(0 0 0);
-    --secondary: oklch(0.8 0.2 150); /* green */
-    --secondary-foreground: oklch(0 0 0);
-    --muted: oklch(0.9 0 0);
-    --muted-foreground: oklch(0.4 0 0);
-    --accent: oklch(0.7 0.2 330); /* pink */
-    --accent-foreground: oklch(0 0 0);
-    --destructive: oklch(0.6 0.25 20);
-    --border: oklch(0 0 0); /* pure black borders */
-    --input: oklch(0 0 0);
-    --ring: oklch(0 0 0);
-    --radius: 0.75rem;
-  }
-  * {
-    @apply border-black;
-  }
-  html {
-    @apply font-sans;
+    @apply font-body-md antialiased overflow-x-hidden m-0 p-0 bg-background text-on-surface;
   }
 }
 
-.bg-pattern-dot {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 24px 24px;
+.texture-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+  mix-blend-mode: multiply;
 }
+
+.arch-card {
+  border-top-left-radius: 9999px;
+  border-top-right-radius: 9999px;
+}
+
+.gold-border {
+  border: 1px solid #cca730;
+}
+
+.indian-motif-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 3.333c.834 5.34 5.34 9.846 10.68 10.68-5.34.834-9.846 5.34-10.68 10.68-.834-5.34-5.34-9.846-10.68-10.68C14.66 13.18 19.166 8.673 20 3.333z' fill='currentColor' fill-opacity='0.15' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+.pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .8; transform: scale(1.05); }
+}
+
+.loading-progress {
+  animation: fillProgress 3s ease-in-out infinite;
+  transform-origin: left;
+}
+
+@keyframes fillProgress {
+  0% { transform: scaleX(0); }
+  50% { transform: scaleX(0.7); }
+  100% { transform: scaleX(1); }
+}
+
+.corner-motif {
+  width: 120px;
+  height: 120px;
+  opacity: 0.3;
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.fade-in {
+  animation: fadeIn 1.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Namaskar Mudra - https://www.cursors-4u.com/cursor/namaskar-mudra */
+* {
+  cursor: url('https://cdn.cursors-4u.net/previews/namaskar-mudra-3fddc72f-32.webp') 32 32, auto !important;
+}
+/* End www.Cursors-4U.com Code */

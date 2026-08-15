@@ -4,20 +4,30 @@ import CulturalClubs from './pages/CulturalClubs';
 import TechnicalClubs from './pages/TechnicalClubs';
 import SportsCommittee from './pages/SportsCommittee';
 import ClubDetails from './pages/ClubDetails';
+import LoadingScreen from './components/LoadingScreen';
+import { useState } from 'react';
 
 function App() {
+  const [loadingComplete, setLoadingComplete] = useState(false);
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/cultural" element={<CulturalClubs />} />
-        <Route path="/clubs/:id" element={<ClubDetails />} />
-        <Route path="/technical" element={<TechnicalClubs />} />
-        <Route path="/sports" element={<SportsCommittee />} />
-      </Routes>
-    </Router>
+    <>
+      {!loadingComplete && <LoadingScreen onComplete={() => setLoadingComplete(true)} />}
+      {loadingComplete && (
+        <Router>
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/cultural" element={<CulturalClubs />} />
+            <Route path="/clubs/:id" element={<ClubDetails />} />
+            <Route path="/technical" element={<TechnicalClubs />} />
+            <Route path="/sports" element={<SportsCommittee />} />
+          </Routes>
+        </Router>
+      )}
+    </>
   )
 }
 
 export default App
+
