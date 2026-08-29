@@ -63,6 +63,35 @@ export const Dashboard: React.FC<DashboardProps> = ({
     setShowEventModal(false);
   };
 
+  // Dynamic Current Month Calendar Calculations
+  const calendarData = useMemo(() => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonthIndex = now.getMonth();
+    const currentMonthName = now.toLocaleString('en-US', { month: 'long' });
+    const currentMonthShort = now.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+    const todayDate = now.getDate();
+
+    const firstDayOfWeek = new Date(currentYear, currentMonthIndex, 1).getDay();
+    const totalDaysInMonth = new Date(currentYear, currentMonthIndex + 1, 0).getDate();
+    const totalDaysInPrevMonth = new Date(currentYear, currentMonthIndex, 0).getDate();
+
+    const leadingDays: number[] = [];
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+      leadingDays.push(totalDaysInPrevMonth - i);
+    }
+
+    return {
+      year: currentYear,
+      monthName: currentMonthName,
+      monthShort: currentMonthShort,
+      today: todayDate,
+      firstDayOfWeek,
+      totalDaysInMonth,
+      leadingDays,
+    };
+  }, []);
+
   return (
     <SidebarLayout>
       {/* Hero Section */}
@@ -148,25 +177,29 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Calendar (Mockup) */}
+          {/* Calendar */}
           <div className="lg:col-span-1 bg-background rounded-lg border border-outline-variant p-6 h-fit shadow-sm">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-headline-md font-headline-md text-on-surface">May 2026</h3>
+              <h3 className="text-headline-md font-headline-md text-on-surface">{calendarData.monthName} {calendarData.year}</h3>
               <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" onClick={() => window.dispatchEvent(new Event('open-master-calendar'))}>open_in_new</span>
             </div>
             <div className="grid grid-cols-7 gap-2 text-center text-label-caps font-label-caps text-on-surface-variant mb-4">
               <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
             </div>
             <div className="grid grid-cols-7 gap-2 text-center text-body-sm font-body-md text-on-surface">
-              <div className="p-2 text-outline">26</div><div className="p-2 text-outline">27</div><div className="p-2 text-outline">28</div><div className="p-2 text-outline">29</div><div className="p-2 text-outline">30</div>
-              {Array.from({ length: 31 }).map((_, i) => {
+              {calendarData.leadingDays.map((d, idx) => (
+                <div key={`prev-${idx}`} className="p-2 text-outline select-none opacity-40">{d}</div>
+              ))}
+              {Array.from({ length: calendarData.totalDaysInMonth }).map((_, i) => {
                 const day = i + 1;
                 const dayEvents = events.filter(e => e.day === day);
                 const isSelected = selectedDate === day;
                 const hasEvent = dayEvents.length > 0;
+                const isToday = calendarData.today === day;
                 
                 let dayClasses = "p-2 cursor-pointer hover:bg-surface-variant rounded-full transition-colors";
                 if (isSelected) dayClasses = "p-2 rounded-full bg-primary-container text-on-primary-container font-semibold shadow-sm";
+                else if (isToday) dayClasses = "p-2 rounded-full bg-primary text-on-primary font-bold shadow-md";
                 else if (hasEvent) dayClasses = "p-2 rounded-full bg-surface-variant text-on-surface font-semibold";
                 
                 return (
@@ -205,7 +238,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     <div className="flex items-center space-x-6">
                       <div className="text-center pr-6 border-r border-outline-variant group-hover:border-tertiary/50 transition-colors">
                         <div className="text-headline-md font-headline-md text-primary">{String(ev.day).padStart(2, '0')}</div>
-                        <div className="text-label-caps font-label-caps text-on-surface-variant">MAY</div>
+                        <div className="text-label-caps font-label-caps text-on-surface-variant">{calendarData.monthShort}</div>
                       </div>
                       <div>
                         <div className="flex items-center space-x-2 mb-1">

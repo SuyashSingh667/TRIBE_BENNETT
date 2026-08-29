@@ -89,7 +89,9 @@ export const MasterCalendarModal: React.FC<MasterCalendarModalProps> = ({ onClos
 
                       <div className="relative z-10 flex flex-col items-start">
                          <span className="text-5xl font-headline-xl text-on-primary tracking-tighter leading-none">{String(ev.day || 1).padStart(2, '0')}</span>
-                         <span className="text-[10px] font-label-caps text-on-primary/80 tracking-[0.3em] uppercase mt-2">MAY 2026</span>
+                         <span className="text-[10px] font-label-caps text-on-primary/80 tracking-[0.3em] uppercase mt-2">
+                           {new Date().toLocaleString('en-US', { month: 'short' }).toUpperCase()} {new Date().getFullYear()}
+                         </span>
                       </div>
 
                       <span className="relative z-10 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-[9px] font-semibold tracking-widest uppercase shadow-sm">
