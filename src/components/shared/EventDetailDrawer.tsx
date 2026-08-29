@@ -15,12 +15,12 @@ export const EventDetailDrawer: React.FC<EventDetailDrawerProps> = ({ event, onC
     <div className="fixed inset-0 z-[500] flex justify-end">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-inverse-surface/60 backdrop-blur-md animate-in fade-in duration-500" 
+        className="absolute inset-0 bg-inverse-surface/60 backdrop-blur-md animate-in fade-in duration-200" 
         onClick={onClose}
       />
       
       {/* Sliding Panel */}
-      <div className="relative w-full max-w-[550px] h-full bg-surface-container-lowest border-l border-tertiary/30 shadow-[0_0_60px_rgba(0,0,0,0.2)] flex flex-col animate-in slide-in-from-right duration-500 overflow-hidden">
+      <div className="relative w-full max-w-[550px] h-full bg-surface-container-lowest border-l border-tertiary/30 shadow-[0_0_60px_rgba(0,0,0,0.2)] flex flex-col animate-in slide-in-from-right duration-200 overflow-hidden">
         
         {/* Subtle Heritage Header Motif */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-tertiary/20 to-transparent pointer-events-none opacity-50"></div>

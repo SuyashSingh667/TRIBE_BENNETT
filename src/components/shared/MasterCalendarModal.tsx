@@ -37,7 +37,7 @@ export const MasterCalendarModal: React.FC<MasterCalendarModalProps> = ({ onClos
 
   return (
     <>
-      <div className="fixed inset-0 z-[200] bg-inverse-surface/80 backdrop-blur-xl flex flex-col p-4 md:p-12 lg:p-16 overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
+      <div className="fixed inset-0 z-[200] bg-inverse-surface/80 backdrop-blur-xl flex flex-col p-4 md:p-12 lg:p-16 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
         <div className="max-w-[1400px] w-full mx-auto relative flex flex-col h-full bg-background border-[2px] border-tertiary/50 rounded-t-[60px] rounded-b-[24px] shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden">
           
           <header className="px-10 py-10 border-b border-tertiary/30 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-primary relative overflow-hidden">

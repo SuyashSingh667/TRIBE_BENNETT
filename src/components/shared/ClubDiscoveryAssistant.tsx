@@ -212,7 +212,7 @@ export const ClubDiscoveryAssistant: React.FC<ClubDiscoveryAssistantProps> = ({ 
       setResults(uniqueResults.slice(0, 3));
       setIsAnalyzing(false);
       setCurrentStep(questions.length); 
-    }, 2500); // slightly longer calculation feel for the AI logic
+    }, 600);
   };
 
   const handleRestart = () => {
@@ -229,8 +229,8 @@ export const ClubDiscoveryAssistant: React.FC<ClubDiscoveryAssistantProps> = ({ 
   const progress = Math.round((currentStep / questions.length) * 100);
 
   return (
-    <div className="fixed inset-0 z-[300] bg-inverse-surface/60 backdrop-blur-md flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300">
-      <div className="w-full max-w-[800px] h-[600px] bg-surface-container-lowest border border-tertiary/20 rounded-[40px] shadow-2xl flex flex-col overflow-hidden relative">
+    <div className="fixed inset-0 z-[300] bg-inverse-surface/60 backdrop-blur-md flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-150">
+      <div className="w-full max-w-[800px] h-[600px] bg-surface-container-lowest border border-tertiary/20 rounded-[40px] shadow-2xl flex flex-col overflow-hidden relative animate-in zoom-in-95 fade-in duration-150">
         
         {/* Background Atmosphere */}
         <div className="absolute top-[-50%] right-[-20%] w-[120%] h-[120%] bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-primary/10 to-transparent blur-3xl pointer-events-none opacity-60" />
@@ -256,7 +256,7 @@ export const ClubDiscoveryAssistant: React.FC<ClubDiscoveryAssistantProps> = ({ 
         {currentStep < questions.length && !isAnalyzing && (
           <div className="h-1 w-full bg-surface-variant relative z-10">
             <div 
-              className="h-full bg-primary shadow-sm transition-all duration-500 ease-out" 
+              className="h-full bg-primary shadow-sm transition-all duration-200 ease-out" 
               style={{ width: `${progress}%` }} 
             />
           </div>
@@ -265,7 +265,7 @@ export const ClubDiscoveryAssistant: React.FC<ClubDiscoveryAssistantProps> = ({ 
         {/* Body Content */}
         <div className="relative z-10 flex-1 flex flex-col overflow-hidden">
           {isAnalyzing ? (
-            <div className="flex-1 flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-500">
+            <div className="flex-1 flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-200">
                <div className="relative size-24 mb-8">
                  <div className="absolute inset-0 border-[3px] border-surface-variant rounded-full"></div>
                  <div className="absolute inset-0 border-[3px] border-primary rounded-full border-t-transparent animate-spin shadow-md"></div>
@@ -277,7 +277,7 @@ export const ClubDiscoveryAssistant: React.FC<ClubDiscoveryAssistantProps> = ({ 
                <p className="text-xs font-label-caps tracking-widest uppercase text-tertiary animate-pulse">Running Discovery Algorithm...</p>
             </div>
           ) : currentStep < questions.length ? (
-            <div key={currentStep} className="flex-1 flex flex-col p-10 md:p-14 animate-in slide-in-from-right-10 fade-in duration-500 overflow-hidden">
+            <div key={currentStep} className="flex-1 flex flex-col p-10 md:p-14 animate-in slide-in-from-right-3 fade-in duration-150 overflow-hidden">
               <div className="mb-6 shrink-0">
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-primary border border-primary/20 bg-primary/10 px-4 py-1.5 rounded-full shadow-sm">
                   Query {currentStep + 1} of {questions.length}
@@ -292,12 +292,12 @@ export const ClubDiscoveryAssistant: React.FC<ClubDiscoveryAssistantProps> = ({ 
                   <button 
                     key={i}
                     onClick={() => handleAnswer(opt)}
-                    className="flex shrink-0 justify-between items-center w-full p-6 rounded-[24px] bg-surface-container border border-outline-variant hover:border-primary hover:bg-surface text-left group transition-all duration-300 hover:-translate-y-1 hover:shadow-md active:scale-95"
+                    className="flex shrink-0 justify-between items-center w-full p-6 rounded-[24px] bg-surface-container border border-outline-variant hover:border-primary hover:bg-surface text-left group transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]"
                   >
                     <span className="text-xl font-headline-sm text-on-surface tracking-tight group-hover:text-primary transition-colors">
                       {opt.label}
                     </span>
-                    <span className="material-symbols-outlined text-tertiary group-hover:text-primary group-hover:translate-x-2 transition-all">
+                    <span className="material-symbols-outlined text-tertiary group-hover:text-primary group-hover:translate-x-1.5 transition-all">
                       arrow_forward
                     </span>
                   </button>
@@ -305,7 +305,7 @@ export const ClubDiscoveryAssistant: React.FC<ClubDiscoveryAssistantProps> = ({ 
               </div>
             </div>
           ) : (
-            <div className="flex-1 flex flex-col p-8 md:p-12 overflow-y-auto custom-scrollbar animate-in slide-in-from-bottom-10 fade-in duration-700">
+            <div className="flex-1 flex flex-col p-8 md:p-12 overflow-y-auto custom-scrollbar animate-in slide-in-from-bottom-3 fade-in duration-200">
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h2 className="text-4xl font-headline-lg tracking-tight text-on-surface">Synthesis Complete</h2>
